@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo Falange Premium - Interpretação do Vídeo</title>
+  <style>
+    /* ============================================================
+       ARQUIVO PRIME - ESTILOS JOGOS FALANGE
+       Produto premium para aula de Espanhol com interpretação de vídeo.
+       Regras principais:
+       1. O vídeo não possui legenda artificial.
+       2. O aluno responde 11 perguntas fiéis ao vídeo.
+       3. Se errar qualquer questão, volta para o início.
+       4. O jogo trabalha compreensão, inferência e atenção aos detalhes.
+       ============================================================ */
+
+    :root{
+      --verde-mexico:#006341;
+      --vermelho-mexico:#ce1126;
+      --azul-premium:#0b3d91;
+      --azul-claro:#eaf3ff;
+      --amarelo:#ffd54f;
+      --laranja:#ff8f00;
+      --branco:#ffffff;
+      --preto:#101820;
+      --cinza:#eef2f7;
+      --borda:22px;
+      --sombra:0 18px 45px rgba(0,0,0,.22);
+    }
+
+    *{box-sizing:border-box;}
+
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      color:var(--preto);
+      background:
+        radial-gradient(circle at top left, rgba(255,213,79,.32), transparent 32%),
+        radial-gradient(circle at top right, rgba(206,17,38,.16), transparent 30%),
+        linear-gradient(135deg,#f7fbff 0%,#dfeeff 48%,#fff8e1 100%);
+      min-height:100vh;
+    }
+
+    header{
+      padding:24px 14px 20px;
+      text-align:center;
+      background:linear-gradient(90deg,var(--verde-mexico) 0%,#ffffff 48%,var(--vermelho-mexico) 100%);
+      border-bottom:8px solid var(--azul-premium);
+      box-shadow:0 8px 22px rgba(0,0,0,.22);
+    }
+
+    header h1{
+      margin:0;
+      font-size:clamp(25px,4.2vw,46px);
+      color:#111;
+      text-shadow:2px 2px 0 #fff;
+      letter-spacing:.4px;
+      font-weight:900;
+    }
+
+    header p{
+      margin:9px 0 0;
+      font-size:clamp(15px,2.3vw,21px);
+      font-weight:900;
+      color:#111;
+      text-shadow:1px 1px 0 #fff;
+    }
+
+    main{
+      width:min(1180px,96%);
+      margin:24px auto 60px;
+    }
+
+    .painel{
+      background:rgba(255,255,255,.94);
+      border:3px solid rgba(11,61,145,.18);
+      border-radius:var(--borda);
+      box-shadow:var(--sombra);
+      padding:18px;
+      margin-bottom:20px;
+    }
+
+    .topo{
+      display:grid;
+      grid-template-columns:1.25fr .75fr;
+      gap:18px;
+      align-items:start;
+    }
+
+    @media(max-width:920px){
+      .topo{grid-template-columns:1fr;}
+    }
+
+    .video-card{
+      border-radius:var(--borda);
+      overflow:hidden;
+      background:#000;
+      border:7px solid var(--azul-premium);
+      position:relative;
+      box-shadow:var(--sombra);
+    }
+
+    video{
+      display:block;
+      width:100%;
+      background:#000;
+    }
+
+    .selo-sem-legenda{
+      position:absolute;
+      top:14px;
+      left:14px;
+      background:rgba(0,0,0,.72);
+      color:#fff;
+      border:2px solid rgba(255,255,255,.65);
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:13px;
+      font-weight:900;
+      pointer-events:none;
+    }
+
+    .controles{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:center;
+      margin-top:14px;
+    }
+
+    button{
+      border:0;
+      border-radius:15px;
+      padding:13px 18px;
+      font-size:16px;
+      font-weight:900;
+      cursor:pointer;
+      box-shadow:0 6px 0 rgba(0,0,0,.22);
+      transition:.15s ease;
+    }
+
+    button:hover{transform:translateY(-2px);}
+    button:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.18);}
+    button:disabled{opacity:.55;cursor:not-allowed;transform:none;}
+
+    .btn-azul{background:var(--azul-premium);color:#fff;}
+    .btn-verde{background:var(--verde-mexico);color:#fff;}
+    .btn-vermelho{background:var(--vermelho-mexico);color:#fff;}
+    .btn-amarelo{background:var(--amarelo);color:#111;}
+
+    h2{margin-top:0;color:var(--azul-premium);}
+
+    .tags{
+      display:flex;
+      flex-wrap:wrap;
+      gap:9px;
+      margin:12px 0 14px;
+    }
+
+    .tag{
+      border-radius:999px;
+      padding:8px 12px;
+      background:#fff8e1;
+      border:2px solid #ffe082;
+      font-weight:900;
+      font-size:14px;
+    }
+
+    .regras{
+      background:linear-gradient(180deg,#ffffff,#f3f8ff);
+      border-left:9px solid var(--azul-premium);
+      border-radius:16px;
+      padding:14px;
+      font-size:16px;
+      line-height:1.5;
+    }
+
+    .progresso{
+      height:24px;
+      background:#d8e2ef;
+      border:2px solid #bdccdf;
+      border-radius:999px;
+      overflow:hidden;
+      margin:14px 0;
+    }
+
+    .barra{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,var(--verde-mexico),var(--amarelo),var(--vermelho-mexico));
+      transition:.28s ease;
+    }
+
+    .placar{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+      text-align:center;
+      margin-top:12px;
+    }
+
+    @media(max-width:720px){.placar{grid-template-columns:1fr 1fr;}}
+
+    .placar div{
+      background:#fff;
+      border:2px solid #d7e4f3;
+      border-radius:16px;
+      padding:12px 8px;
+      font-weight:900;
+    }
+
+    .placar strong{
+      display:block;
+      color:var(--vermelho-mexico);
+      font-size:25px;
+      margin-top:4px;
+    }
+
+    .quiz{
+      display:none;
+      border:5px dashed var(--azul-premium);
+      animation:entrada .25s ease;
+    }
+
+    .quiz.ativo{display:block;}
+
+    @keyframes entrada{
+      from{opacity:0;transform:translateY(10px);}
+      to{opacity:1;transform:translateY(0);}
+    }
+
+    .pergunta-numero{
+      display:inline-block;
+      background:var(--vermelho-mexico);
+      color:#fff;
+      border-radius:999px;
+      padding:8px 13px;
+      font-weight:900;
+      margin-bottom:10px;
+    }
+
+    .enunciado{
+      background:#fffde7;
+      border-left:10px solid var(--amarelo);
+      border-radius:16px;
+      padding:16px;
+      font-size:clamp(19px,2.6vw,27px);
+      font-weight:900;
+      line-height:1.35;
+      margin-bottom:16px;
+    }
+
+    .opcoes{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:13px;
+    }
+
+    @media(max-width:820px){.opcoes{grid-template-columns:1fr;}}
+
+    .opcao{
+      min-height:76px;
+      display:flex;
+      align-items:center;
+      background:#fff;
+      border:3px solid #d8e5f3;
+      border-radius:18px;
+      padding:15px;
+      font-size:17px;
+      line-height:1.35;
+      font-weight:800;
+      cursor:pointer;
+      transition:.15s ease;
+    }
+
+    .opcao:hover{
+      border-color:var(--azul-premium);
+      background:var(--azul-claro);
+      transform:translateY(-2px);
+    }
+
+    .opcao.correta{background:#e8f5e9;border-color:var(--verde-mexico);}
+    .opcao.errada{background:#ffebee;border-color:var(--vermelho-mexico);}
+
+    .feedback{
+      display:none;
+      margin-top:15px;
+      border-radius:16px;
+      padding:14px;
+      font-size:18px;
+      line-height:1.45;
+      font-weight:900;
+    }
+
+    .feedback.ok{display:block;background:#e8f5e9;border:3px solid var(--verde-mexico);}
+    .feedback.no{display:block;background:#ffebee;border:3px solid var(--vermelho-mexico);}
+
+    .final{
+      display:none;
+      text-align:center;
+      padding:26px;
+      border:5px solid var(--verde-mexico);
+      background:linear-gradient(180deg,#ffffff,#e8f5e9);
+    }
+
+    .final.ativo{display:block;}
+
+    .final h2{font-size:clamp(26px,4vw,44px);color:var(--verde-mexico);}
+
+    footer{
+      text-align:center;
+      font-weight:900;
+      color:#405060;
+      margin:26px 0 6px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Jogo Falange Premium: Interpretação do Vídeo</h1>
+    <p>Chaves em espanhol • 11 perguntas • errou, volta do início</p>
+  </header>
+
+  <main>
+    <section class="painel topo">
+      <div>
+        <div class="video-card">
+          <span class="selo-sem-legenda"> atenção nas falas e na cena</span>
+          <video id="video" controls preload="metadata">
+            <source src="video_chaves.mp4" type="video/mp4">
+            Seu navegador não conseguiu carregar o vídeo.
+          </video>
+        </div>
+
+        <div class="controles">
+          <button class="btn-verde" onclick="iniciarJogo()">▶ Iniciar jogo</button>
+          <button class="btn-azul" onclick="pausarVideo()">⏸ Pausar</button>
+          <button class="btn-amarelo" onclick="continuarVideo()">▶ Continuar</button>
+          <button class="btn-vermelho" onclick="reiniciarJogo()">↺ Reiniciar</button>
+        </div>
+      </div>
+
+      <aside>
+        <h2>Objetivo da atividade</h2>
+        <div class="tags">
+          <span class="tag">Interpretação</span>
+          <span class="tag">Espanhol</span>
+          <span class="tag">Atenção aos detalhes</span>
+          <span class="tag">Cultura mexicana</span>
+        </div>
+        <div class="regras">
+          <strong>Como funciona:</strong><br>
+          O vídeo pausa automaticamente em momentos importantes. O aluno deve interpretar a cena e escolher a resposta correta. As questões não são de tradução solta: exigem atenção ao que acontece, ao comportamento dos personagens e ao contexto escolar do episódio.
+          <br><br>
+          <strong>Regra principal:</strong> se errar, o jogo zera e volta para o começo do vídeo.
+        </div>
+
+        <div class="progresso"><div id="barra" class="barra"></div></div>
+        <div class="placar">
+          <div>Total<strong id="total">11</strong></div>
+          <div>Acertos<strong id="acertos">0</strong></div>
+          <div>Fase<strong id="fase">0</strong></div>
+          <div>Tempo<strong id="tempo">0:00</strong></div>
+        </div>
+      </aside>
+    </section>
+
+    <section id="quiz" class="painel quiz">
+      <span id="numeroPergunta" class="pergunta-numero">Pergunta 1 de 11</span>
+      <div id="enunciado" class="enunciado"></div>
+      <div id="opcoes" class="opcoes"></div>
+      <div id="feedback" class="feedback"></div>
+      <div class="controles">
+        <button id="btnContinuar" class="btn-verde" onclick="continuarVideo()" style="display:none;">Continuar vídeo</button>
+      </div>
+    </section>
+
+    <section id="final" class="painel final">
+      <h2>🎉 Parabéns! Você venceu o desafio.</h2>
+      <p>Você respondeu corretamente as 11 perguntas sem errar. Isso mostra atenção ao vocabulário, às falas, ao comportamento dos personagens e ao humor da cena.</p>
+      <button class="btn-azul" onclick="reiniciarJogo()">Jogar novamente</button>
+    </section>
+
+    <footer>Arquivo Prime • Estilo Jogos Falange • Código organizado e comentado</footer>
+  </main>
+
+  <script>
+    /* ============================================================
+       BANCO DE PERGUNTAS
+       As perguntas foram feitas para acompanhar a sequência do vídeo.
+       O campo "tempo" indica o ponto em que o vídeo deve pausar.
+       ============================================================ */
+
+    const perguntas = [
+      {
+    tempo: 20,
+    pergunta: "1) ¿Por qué el Profesor Jirafales deja a Don Ramón al frente de la clase?",
+    opcoes: [
+        "Porque Seu Madruga é o novo professor da escola.",
+        "Porque a aula já havia terminado.",
+        "Porque o Professor Girafales vai conversar com a Dona Florinda e pede que Seu Madruga cuide da turma.",
+        "Porque os alunos pediram para Seu Madruga dar a aula."
+    ],
+    correta: 2,
+    explicacao: "O Professor Girafales sai por alguns instantes para conversar com a Dona Florinda e pede que Seu Madruga fique responsável pela turma. Aproveitando a oportunidade, Seu Madruga tenta agir como se fosse o professor."
+},
+      {
+    tempo: 77,
+    pergunta: "2) ¿Por qué Don Ramón se enoja con los alumnos cuando queda al frente de la clase?",
+    opcoes: [
+        "Porque os alunos começam a jogar bolas de papel na sala.",
+        "Porque os alunos o chamam pelo nome e não demonstram o respeito que ele espera como professor.",
+        "Porque ninguém quer copiar a lição do quadro.",
+        "Porque o Professor Girafales volta mais cedo para a sala."
+    ],
+    correta: 1,
+    explicacao: "Don Ramón quer ser tratado com respeito enquanto está responsável pela turma. Ele se irrita porque os alunos continuam chamando-o de 'Don Ramón' em vez de tratá-lo como um professor."
+},
+     {
+    tempo: 95,
+    pergunta: "3) ¿Qué le pregunta Don Ramón a Popis durante la clase?",
+    opcoes: [
+        "Popis, o que vale mais: um litro de leite ou um litro de água?",
+        "Popis, o que vale mais: um quilo de arroz ou um quilo de feijão?",
+        "Popis, o que pesa mais: um quilo de algodão ou um quilo de ferro?",
+        "Popis, o que vale mais: um quilo de tomate ou um quilo de cebola?"
+    ],
+    correta: 3,
+    explicacao: "Don Ramón pergunta à Popis: 'O que vale mais: um quilo de tomate ou um quilo de cebola?'. A resposta correta é essa pergunta feita durante a aula."
+},
+      
+      {
+    tempo: 130,
+    pergunta: "5) ¿Por qué Don Ramón no reprueba a Godínez después de su respuesta?",
+    opcoes: [
+        "Porque Godínez responde rapidamente e mostra que sabia toda a matéria.",
+        "Porque Godínez fica em silêncio e Don Ramón decide passar para outro aluno.",
+        "Porque Godínez confunde Don Ramón com outra pergunta, e ele não sabe como responder.",
+        "Porque o Professor Girafales volta para a sala e interrompe a pergunta."
+    ],
+    correta: 2,
+    explicacao: "Don Ramón pergunta a Godínez o que vale mais: uma corrida ou um terço. Godínez responde com outra pergunta, deixando Don Ramón confuso. Como Don Ramón não sabe responder, acaba aprovando Godínez."
+},
+      {
+        tempo: 156,
+        pergunta: "6) Em uma atividade de vocabulário, a cena é útil porque mostra palavras e situações ligadas a qual campo semântico?",
+        opcoes: [
+          "Escola: professor, alunos, sala, quadro, carteira, aula e comportamento.",
+          "Hospital: médico, cirurgia, remédio e ambulância.",
+          "Aeroporto: passagem, mala, piloto e avião.",
+          "Restaurante: garçom, cardápio, conta e cozinha."
+        ],
+        correta: 0,
+        explicacao: "O cenário e as ações pertencem ao universo escolar, o que permite trabalhar vocabulário de sala de aula em espanhol."
+      },
+      {
+    tempo: 185,
+    pergunta: "7) ¿Qué dibujo está haciendo Don Ramón en el pizarrón cuando llega el Profesor Jirafales?",
+    opcoes: [
+        "Um coração.",
+        "Uma flor.",
+        "Um chapéu.",
+        "Uma caveira."
+    ],
+    correta: 3,
+    explicacao: "Quando o Professor Jirafales retorna à sala, Don Ramón está desenhando uma caveira no quadro. Esse momento aumenta o humor da cena e mostra que ele não estava conduzindo a aula da maneira esperada."
+},
+      {
+    tempo: 212,
+    pergunta: "8) ¿Qué significa la calavera, según la explicación de Don Ramón?",
+    opcoes: [
+        "Alegria.",
+        "Perigo.",
+        "Tristeza.",
+        "Boa sorte."
+    ],
+    correta: 1,
+    explicacao: "Ao explicar o desenho da caveira no quadro, Don Ramón afirma que ela significa 'perigo'. Essa é a resposta correta de acordo com a explicação dada por ele durante a aula."
+},
+      {
+    tempo: 250,
+    pergunta: "9) Según la explicación de Don Ramón, ¿qué acción puede causar la muerte en la escena?",
+    opcoes: [
+        "Abrir uma garrafa marcada com caveira sem observar seu conteúdo.",
+        "Cheirar uma garrafa marcada com caveira durante a explicação.",
+        "Guardar uma garrafa marcada com caveira dentro da sala.",
+        "Beber o líquido de uma garrafa marcada com caveira, pois é veneno."
+    ],
+    correta: 3,
+    explicacao: "Don Ramón encena uma situação de perigo para explicar que uma garrafa com caveira indica veneno. Segundo a explicação dele, beber esse líquido pode causar a morte."
+},
+      {
+    tempo: 277,
+    pergunta: "10) Según la nueva explicación de Don Ramón, ¿qué otra situación puede causar la muerte?",
+    opcoes: [
+        "Tocar em fios elétricos identificados com uma caveira, pois há risco de choque e morte.",
+        "Abrir uma porta que tenha uma caveira desenhada, pois pode ser um lugar perigoso.",
+        "Entrar em um local com uma caveira desenhada, sem observar os avisos de segurança.",
+        "Segurar uma placa com uma caveira desenhada, sem conhecer o significado do símbolo."
+    ],
+    correta: 0,
+    explicacao: "Na continuação da explicação, Don Ramón mostra que o símbolo da caveira também indica perigo em locais com eletricidade. Segundo a encenação, tocar em fios elétricos identificados com esse símbolo pode provocar choque elétrico e levar à morte."
+},
+     {
+    tempo: 320,
+    pergunta: "11) ¿Cuál es la mejor conclusión sobre el uso de este video en una clase de cultura mexicana?",
+    opcoes: [
+        "Permite estudar apenas fatos históricos do México, sem explorar a língua, o humor ou as relações entre os personagens.",
+        "Serve exclusivamente para conhecer costumes alimentares mexicanos, sem apresentar diálogos ou situações do cotidiano escolar.",
+        "Permite trabalhar a língua espanhola, o humor mexicano, as relações sociais e o vocabulário do cotidiano escolar.",
+        "É indicado somente para observar as roupas dos personagens, sem desenvolver interpretação ou aspectos culturais."
+    ],
+    correta: 2,
+    explicacao: "O seriado Chaves é um importante representante da cultura popular mexicana. Por meio dele, é possível trabalhar a língua espanhola, o humor, as relações sociais e o vocabulário utilizado em situações do cotidiano."
+},
+    ];
+
+    /* ============================================================
+       VARIÁVEIS DO JOGO
+       ============================================================ */
+
+    const video = document.getElementById('video');
+    const quiz = document.getElementById('quiz');
+    const final = document.getElementById('final');
+    const enunciado = document.getElementById('enunciado');
+    const opcoes = document.getElementById('opcoes');
+    const feedback = document.getElementById('feedback');
+    const btnContinuar = document.getElementById('btnContinuar');
+    const numeroPergunta = document.getElementById('numeroPergunta');
+    const barra = document.getElementById('barra');
+    const total = document.getElementById('total');
+    const acertosEl = document.getElementById('acertos');
+    const faseEl = document.getElementById('fase');
+    const tempoEl = document.getElementById('tempo');
+
+    let indiceAtual = 0;
+    let acertos = 0;
+    let aguardandoResposta = false;
+    let jogoIniciado = false;
+
+    total.textContent = perguntas.length;
+
+    /* ============================================================
+       FUNÇÕES PRINCIPAIS
+       ============================================================ */
+
+    function iniciarJogo(){
+      reiniciarEstado();
+      jogoIniciado = true;
+      video.currentTime = 0;
+      video.play();
+    }
+
+    function pausarVideo(){
+      video.pause();
+    }
+
+    function continuarVideo(){
+      quiz.classList.remove('ativo');
+      feedback.className = 'feedback';
+      feedback.textContent = '';
+      btnContinuar.style.display = 'none';
+      aguardandoResposta = false;
+      video.play();
+    }
+
+    function reiniciarJogo(){
+      reiniciarEstado();
+      video.currentTime = 0;
+      video.pause();
+    }
+
+    function reiniciarEstado(){
+      indiceAtual = 0;
+      acertos = 0;
+      aguardandoResposta = false;
+      jogoIniciado = false;
+      quiz.classList.remove('ativo');
+      final.classList.remove('ativo');
+      btnContinuar.style.display = 'none';
+      feedback.className = 'feedback';
+      feedback.textContent = '';
+      atualizarPlacar();
+    }
+
+    function mostrarPergunta(){
+      const q = perguntas[indiceAtual];
+      video.pause();
+      aguardandoResposta = true;
+
+      numeroPergunta.textContent = `Pergunta ${indiceAtual + 1} de ${perguntas.length}`;
+      enunciado.textContent = q.pergunta;
+      opcoes.innerHTML = '';
+      feedback.className = 'feedback';
+      feedback.textContent = '';
+      btnContinuar.style.display = 'none';
+
+      q.opcoes.forEach((texto, i) => {
+        const div = document.createElement('div');
+        div.className = 'opcao';
+        div.textContent = texto;
+        div.onclick = () => responder(i, div);
+        opcoes.appendChild(div);
+      });
+
+      quiz.classList.add('ativo');
+      quiz.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+
+    function responder(indiceEscolhido, elemento){
+      if(!aguardandoResposta) return;
+
+      const q = perguntas[indiceAtual];
+      const todas = document.querySelectorAll('.opcao');
+      todas.forEach(op => op.style.pointerEvents = 'none');
+
+      if(indiceEscolhido === q.correta){
+        elemento.classList.add('correta');
+        acertos++;
+        indiceAtual++;
+        atualizarPlacar();
+
+        feedback.className = 'feedback ok';
+        feedback.innerHTML = `✅ Correto!<br>${q.explicacao}`;
+
+        if(indiceAtual >= perguntas.length){
+          setTimeout(() => concluirJogo(), 1200);
+        }else{
+          btnContinuar.style.display = 'inline-block';
+        }
+      }else{
+        elemento.classList.add('errada');
+        todas[q.correta].classList.add('correta');
+        feedback.className = 'feedback no';
+        feedback.innerHTML = `❌ Resposta errada. Pelo regulamento do jogo, você voltará para o início.<br><br><strong>Explicação:</strong> ${q.explicacao}`;
+        setTimeout(() => {
+          reiniciarEstado();
+          jogoIniciado = true;
+          video.currentTime = 0;
+          video.play();
+        }, 3600);
+      }
+    }
+
+    function concluirJogo(){
+      quiz.classList.remove('ativo');
+      final.classList.add('ativo');
+      video.pause();
+      final.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+
+    function atualizarPlacar(){
+      acertosEl.textContent = acertos;
+      faseEl.textContent = indiceAtual;
+      const pct = (indiceAtual / perguntas.length) * 100;
+      barra.style.width = pct + '%';
+    }
+
+    function formatarTempo(segundos){
+      const min = Math.floor(segundos / 60);
+      const seg = Math.floor(segundos % 60).toString().padStart(2,'0');
+      return `${min}:${seg}`;
+    }
+
+    /* ============================================================
+       PAUSA AUTOMÁTICA DO VÍDEO
+       ============================================================ */
+
+    video.addEventListener('timeupdate', () => {
+      tempoEl.textContent = formatarTempo(video.currentTime);
+
+      if(!jogoIniciado || aguardandoResposta || indiceAtual >= perguntas.length) return;
+
+      const proxima = perguntas[indiceAtual];
+      if(video.currentTime >= proxima.tempo){
+        mostrarPergunta();
+      }
+    });
+
+    video.addEventListener('ended', () => {
+      if(jogoIniciado && indiceAtual < perguntas.length){
+        mostrarPergunta();
+      }
+    });
+
+    atualizarPlacar();
+  </script>
+</body>
+</html>

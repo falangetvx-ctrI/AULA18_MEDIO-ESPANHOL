@@ -1,0 +1,1115 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Expedição México — Passaporte Cultural</title>
+
+  <style>
+    /* =========================================================
+       PROJETO FALANGE
+       ATIVIDADE INTERATIVA: EXPEDIÇÃO MÉXICO
+       Proposta: passaporte cultural com 5 missões diferentes
+       Arquivo autônomo: não depende de imagens externas
+       ========================================================= */
+
+    :root{
+      --verde:#08783f;
+      --vermelho:#c62828;
+      --creme:#fff5d9;
+      --amarelo:#ffd54f;
+      --azul:#1976d2;
+      --preto:#111;
+      --branco:#fff;
+      --cinza:#e7e7e7;
+      --sombra:0 7px 0 var(--preto);
+      --borda:4px solid var(--preto);
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:Arial,Helvetica,sans-serif;
+      color:var(--preto);
+      background:
+        radial-gradient(circle at 10% 10%,rgba(255,213,79,.65),transparent 20%),
+        radial-gradient(circle at 90% 15%,rgba(198,40,40,.45),transparent 22%),
+        radial-gradient(circle at 15% 90%,rgba(8,120,63,.50),transparent 24%),
+        linear-gradient(135deg,#f8e5a7,#fff9e9 45%,#f5c2bd);
+      overflow-x:hidden;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.12;
+      background-image:
+        repeating-linear-gradient(45deg,transparent 0 18px,#000 18px 20px),
+        repeating-linear-gradient(-45deg,transparent 0 25px,#fff 25px 28px);
+    }
+
+    button,input{
+      font:inherit;
+    }
+
+    button{
+      border:var(--borda);
+      border-radius:15px;
+      padding:10px 15px;
+      font-weight:900;
+      cursor:pointer;
+      box-shadow:0 5px 0 var(--preto);
+      transition:.15s;
+    }
+
+    button:hover{transform:translateY(-2px)}
+    button:active{
+      transform:translateY(4px);
+      box-shadow:0 1px 0 var(--preto);
+    }
+
+    button:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    .app{
+      width:min(1180px,96%);
+      margin:auto;
+      padding:18px 0 40px;
+      position:relative;
+      z-index:1;
+    }
+
+    .topo{
+      background:rgba(255,245,217,.97);
+      border:5px solid var(--preto);
+      border-radius:26px;
+      box-shadow:var(--sombra);
+      padding:16px;
+      text-align:center;
+      margin-bottom:18px;
+    }
+
+    .topo h1{
+      margin:0;
+      color:var(--vermelho);
+      font-size:clamp(28px,5vw,56px);
+      text-transform:uppercase;
+      text-shadow:3px 3px 0 var(--amarelo),5px 5px 0 var(--preto);
+    }
+
+    .topo p{
+      margin:12px 0 0;
+      font-size:clamp(15px,2vw,20px);
+      font-weight:900;
+    }
+
+    .painel{
+      display:grid;
+      grid-template-columns:330px 1fr;
+      gap:18px;
+    }
+
+    .cartao{
+      background:rgba(255,245,217,.97);
+      border:5px solid var(--preto);
+      border-radius:25px;
+      box-shadow:var(--sombra);
+      padding:16px;
+    }
+
+    /* PASSAPORTE */
+    .passaporte{
+      min-height:620px;
+    }
+
+    .capa-passaporte{
+      background:var(--verde);
+      color:#fff;
+      border:var(--borda);
+      border-radius:20px;
+      padding:16px;
+      text-align:center;
+      margin-bottom:14px;
+    }
+
+    .capa-passaporte .brasao{
+      font-size:64px;
+      filter:drop-shadow(3px 3px 0 #000);
+    }
+
+    .capa-passaporte h2{
+      margin:6px 0;
+      text-transform:uppercase;
+    }
+
+    .dados-aluno{
+      background:#fff;
+      border:3px dashed var(--vermelho);
+      border-radius:16px;
+      padding:12px;
+      margin-bottom:12px;
+    }
+
+    .dados-aluno label{
+      display:block;
+      font-weight:900;
+      margin-bottom:6px;
+    }
+
+    .dados-aluno input{
+      width:100%;
+      border:3px solid #111;
+      border-radius:10px;
+      padding:10px;
+      font-weight:800;
+    }
+
+    .placar{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      margin:12px 0;
+    }
+
+    .placar div{
+      border:3px solid #111;
+      border-radius:13px;
+      text-align:center;
+      padding:9px;
+      font-weight:900;
+      background:#fff;
+    }
+
+    .selos{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:8px;
+      margin-top:12px;
+    }
+
+    .selo{
+      min-height:88px;
+      border:3px dashed #555;
+      border-radius:50%;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      background:#eee;
+      filter:grayscale(1);
+      opacity:.48;
+      text-align:center;
+      font-size:12px;
+      font-weight:900;
+      transition:.35s;
+    }
+
+    .selo span{font-size:32px}
+
+    .selo.conquistado{
+      filter:none;
+      opacity:1;
+      background:var(--amarelo);
+      transform:rotate(-4deg) scale(1.03);
+      border:3px solid #111;
+    }
+
+    /* ÁREA PRINCIPAL */
+    .palco{
+      min-height:620px;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .status{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:12px;
+    }
+
+    .pill{
+      border:3px solid #111;
+      border-radius:999px;
+      padding:8px 13px;
+      font-weight:900;
+      background:#fff;
+    }
+
+    .barra{
+      height:24px;
+      border:3px solid #111;
+      border-radius:999px;
+      overflow:hidden;
+      background:#ddd;
+      margin-bottom:14px;
+    }
+
+    .barra>div{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,var(--verde),#fff,var(--vermelho));
+      transition:.4s;
+    }
+
+    .tela{
+      flex:1;
+      border:4px dashed var(--vermelho);
+      border-radius:22px;
+      background:#fff;
+      padding:20px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .tela::after{
+      content:"🇲🇽";
+      position:absolute;
+      right:-20px;
+      bottom:-40px;
+      font-size:220px;
+      opacity:.05;
+      transform:rotate(-15deg);
+      pointer-events:none;
+    }
+
+    .centro{
+      min-height:480px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
+      position:relative;
+      z-index:2;
+    }
+
+    .icone-grande{
+      font-size:92px;
+      filter:drop-shadow(4px 4px 0 rgba(0,0,0,.25));
+    }
+
+    .titulo-fase{
+      font-size:clamp(26px,4vw,44px);
+      margin:8px 0;
+      color:var(--verde);
+      text-transform:uppercase;
+    }
+
+    .texto{
+      max-width:760px;
+      font-size:clamp(18px,2.3vw,25px);
+      line-height:1.35;
+      font-weight:800;
+    }
+
+    .btn-verde{background:var(--verde);color:#fff}
+    .btn-vermelho{background:var(--vermelho);color:#fff}
+    .btn-amarelo{background:var(--amarelo)}
+    .btn-azul{background:var(--azul);color:#fff}
+
+    .opcoes{
+      width:100%;
+      display:grid;
+      grid-template-columns:repeat(2,minmax(180px,1fr));
+      gap:12px;
+      margin-top:18px;
+    }
+
+    .opcao{
+      min-height:82px;
+      background:#fff;
+      font-size:18px;
+    }
+
+    .opcao.certa{background:#9ee2b7}
+    .opcao.errada{background:#f4a6a6}
+
+    .mensagem{
+      min-height:52px;
+      margin-top:14px;
+      font-size:20px;
+      font-weight:900;
+    }
+
+    /* MISSÃO 1: BANDEIRA */
+    .bandeira-montagem{
+      width:min(600px,100%);
+      height:220px;
+      border:5px solid #111;
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      margin:18px auto;
+      background:#eee;
+    }
+
+    .faixa{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      font-size:52px;
+      font-weight:900;
+      user-select:none;
+    }
+
+    .cores{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:10px;
+    }
+
+    .cor-btn{min-width:120px}
+
+    /* MISSÃO 2: PIRÂMIDE */
+    .pirâmides{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+      width:100%;
+      margin-top:18px;
+    }
+
+    .piramide-card{
+      background:#fff5d9;
+      border:4px solid #111;
+      border-radius:16px;
+      padding:14px;
+      cursor:pointer;
+      font-weight:900;
+      box-shadow:0 5px 0 #111;
+    }
+
+    .piramide-card .emoji{font-size:68px}
+
+    /* MISSÃO 3: ALTAR */
+    .altar{
+      width:min(650px,100%);
+      min-height:200px;
+      border:5px solid #111;
+      border-radius:20px;
+      background:linear-gradient(#7b1fa2,#c62828);
+      color:#fff;
+      display:flex;
+      flex-wrap:wrap;
+      align-content:center;
+      justify-content:center;
+      gap:10px;
+      padding:14px;
+      margin:14px auto;
+    }
+
+    .item-altar{
+      background:#fff;
+      color:#111;
+      min-width:120px;
+    }
+
+    .item-altar.selecionado{
+      background:var(--amarelo);
+      transform:rotate(-2deg);
+    }
+
+    /* MISSÃO 4: RITMO */
+    .ritmo{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+      width:min(680px,100%);
+      margin:18px auto;
+    }
+
+    .som{
+      min-height:105px;
+      font-size:45px;
+      background:#fff;
+    }
+
+    .som.aceso{
+      background:var(--amarelo);
+      transform:scale(1.05);
+    }
+
+    /* FINAL */
+    .diploma{
+      width:min(760px,100%);
+      border:8px double #111;
+      border-radius:18px;
+      padding:24px;
+      background:
+        linear-gradient(90deg,rgba(8,120,63,.12),transparent 30%,transparent 70%,rgba(198,40,40,.12)),
+        #fffaf0;
+    }
+
+    .diploma h2{
+      color:var(--vermelho);
+      font-size:38px;
+      margin:4px 0 12px;
+    }
+
+    .diploma .nome-final{
+      font-size:30px;
+      border-bottom:3px solid #111;
+      padding:8px;
+      margin:18px 0;
+      font-family:"Trebuchet MS",Arial,sans-serif;
+    }
+
+    .confete{
+      position:fixed;
+      top:-30px;
+      z-index:20;
+      font-size:24px;
+      animation:cair 4s linear forwards;
+      pointer-events:none;
+    }
+
+    @keyframes cair{
+      to{
+        transform:translateY(115vh) rotate(720deg);
+        opacity:.1;
+      }
+    }
+
+    @media(max-width:850px){
+      .painel{grid-template-columns:1fr}
+      .passaporte{min-height:auto}
+      .opcoes,.pirâmides{grid-template-columns:1fr}
+      .ritmo{grid-template-columns:repeat(2,1fr)}
+    }
+
+    @media print{
+      body{background:#fff}
+      body::before,.topo,.palco,.dados-aluno,.placar{display:none!important}
+      .painel{display:block}
+      .passaporte{box-shadow:none;border:0}
+      .selo{filter:none;opacity:1}
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <header class="topo">
+      <h1>Expedição México</h1>
+      <p>Complete cinco missões, conquiste os selos e preencha seu Passaporte Cultural.</p>
+    </header>
+
+    <section class="painel">
+      <!-- =====================================================
+           COLUNA DO PASSAPORTE
+           ===================================================== -->
+      <aside class="cartao passaporte">
+        <div class="capa-passaporte">
+          <div class="brasao">🦅</div>
+          <h2>Passaporte Cultural</h2>
+          <div>Estados Unidos Mexicanos</div>
+        </div>
+
+        <div class="dados-aluno">
+          <label for="nomeAluno">NOME DO VIAJANTE:</label>
+          <input id="nomeAluno" type="text" maxlength="40" placeholder="Digite seu nome">
+        </div>
+
+        <div class="placar">
+          <div>PONTOS<br><span id="pontos">0</span></div>
+          <div>MISSÃO<br><span id="numeroMissao">0</span>/5</div>
+        </div>
+
+        <h3 style="text-align:center;margin:8px 0">SELOS CONQUISTADOS</h3>
+
+        <div class="selos">
+          <div class="selo" id="selo1"><span>🇲🇽</span>BANDEIRA</div>
+          <div class="selo" id="selo2"><span>🛕</span>PIRÂMIDES</div>
+          <div class="selo" id="selo3"><span>💀</span>TRADIÇÕES</div>
+          <div class="selo" id="selo4"><span>🎺</span>MARIACHI</div>
+          <div class="selo" id="selo5"><span>🌎</span>CULTURA</div>
+        </div>
+
+        <button class="btn-vermelho" style="width:100%;margin-top:16px" onclick="reiniciarJogo()">
+          ↺ REINICIAR EXPEDIÇÃO
+        </button>
+      </aside>
+
+      <!-- =====================================================
+           PALCO DAS MISSÕES
+           ===================================================== -->
+      <section class="cartao palco">
+        <div class="status">
+          <div class="pill">📍 DESTINO: <span id="destino">PORTÃO DE EMBARQUE</span></div>
+          <div class="pill">⭐ ACERTOS: <span id="acertos">0</span></div>
+        </div>
+
+        <div class="barra"><div id="barraProgresso"></div></div>
+
+        <div class="tela">
+          <div class="centro" id="conteudo">
+            <div class="icone-grande">✈️🇲🇽</div>
+            <h2 class="titulo-fase">Prepare seu passaporte!</h2>
+            <p class="texto">
+              Nesta viagem você não responderá apenas perguntas.
+              Cada parada possui uma missão diferente: montar, descobrir,
+              escolher, memorizar e decifrar.
+            </p>
+            <button class="btn-verde" onclick="comecar()">INICIAR VIAGEM</button>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    /* =========================================================
+       1. ESTADO GERAL DO JOGO
+       ========================================================= */
+    let missao = 0;
+    let pontos = 0;
+    let acertos = 0;
+    let bloqueado = false;
+
+    const conteudo = document.getElementById("conteudo");
+    const pontosEl = document.getElementById("pontos");
+    const acertosEl = document.getElementById("acertos");
+    const numeroMissaoEl = document.getElementById("numeroMissao");
+    const destinoEl = document.getElementById("destino");
+    const barraEl = document.getElementById("barraProgresso");
+
+    function falar(texto){
+      if(!("speechSynthesis" in window)) return;
+      speechSynthesis.cancel();
+      const voz = new SpeechSynthesisUtterance(texto);
+      voz.lang = "pt-BR";
+      voz.rate = .95;
+      speechSynthesis.speak(voz);
+    }
+
+    function atualizarPainel(){
+      pontosEl.textContent = pontos;
+      acertosEl.textContent = acertos;
+      numeroMissaoEl.textContent = missao;
+      barraEl.style.width = (missao / 5 * 100) + "%";
+    }
+
+    function premiar(numero,pontosGanhos=20){
+      pontos += pontosGanhos;
+      acertos++;
+      document.getElementById("selo"+numero).classList.add("conquistado");
+      atualizarPainel();
+    }
+
+    function avancarDepois(funcao,tempo=1500){
+      bloqueado = true;
+      setTimeout(()=>{
+        bloqueado = false;
+        funcao();
+      },tempo);
+    }
+
+    function nomeDoAluno(){
+      return document.getElementById("nomeAluno").value.trim() || "Viajante Cultural";
+    }
+
+    /* =========================================================
+       2. INÍCIO
+       ========================================================= */
+    function comecar(){
+      missao = 1;
+      atualizarPainel();
+      missaoBandeira();
+    }
+
+    /* =========================================================
+       3. MISSÃO 1 — MONTAR A BANDEIRA
+       Mecânica: clicar nas cores na ordem correta.
+       ========================================================= */
+    let ordemBandeira = [];
+
+    function missaoBandeira(){
+      destinoEl.textContent = "CIDADE DO MÉXICO";
+      ordemBandeira = [];
+
+      conteudo.innerHTML = `
+        <div class="icone-grande">🏙️</div>
+        <h2 class="titulo-fase">Missão 1: Monte a bandeira</h2>
+        <p class="texto">
+          Clique nas cores na ordem em que aparecem na bandeira mexicana,
+          da esquerda para a direita.
+        </p>
+
+        <div class="bandeira-montagem" id="bandeira">
+          <div class="faixa" id="faixa0">?</div>
+          <div class="faixa" id="faixa1">?</div>
+          <div class="faixa" id="faixa2">?</div>
+        </div>
+
+        <div class="cores">
+          <button class="cor-btn btn-verde" onclick="escolherCor('verde','#08783f')">VERDE</button>
+          <button class="cor-btn" onclick="escolherCor('branco','#ffffff')">BRANCO</button>
+          <button class="cor-btn btn-vermelho" onclick="escolherCor('vermelho','#c62828')">VERMELHO</button>
+        </div>
+
+        <div class="mensagem" id="msg"></div>
+      `;
+
+      falar("Missão um. Monte a bandeira mexicana na ordem correta.");
+    }
+
+    function escolherCor(nome,hex){
+      if(bloqueado || ordemBandeira.length>=3) return;
+
+      const posicao = ordemBandeira.length;
+      ordemBandeira.push(nome);
+      const faixa = document.getElementById("faixa"+posicao);
+      faixa.style.background = hex;
+      faixa.textContent = nome === "branco" ? "🦅" : "";
+
+      if(ordemBandeira.length===3){
+        const certa = ordemBandeira.join(",")==="verde,branco,vermelho";
+        const msg = document.getElementById("msg");
+
+        if(certa){
+          msg.textContent = "✅ Perfeito! Verde, branco e vermelho.";
+          premiar(1,20);
+          falar("Muito bem. A bandeira foi montada corretamente.");
+          avancarDepois(()=>{
+            missao=2;
+            atualizarPainel();
+            missaoPiramide();
+          },1800);
+        }else{
+          msg.textContent = "❌ A ordem não está correta. Tente novamente.";
+          pontos = Math.max(0,pontos-5);
+          atualizarPainel();
+          ordemBandeira=[];
+          setTimeout(()=>{
+            ["faixa0","faixa1","faixa2"].forEach(id=>{
+              const el=document.getElementById(id);
+              el.style.background="#eee";
+              el.textContent="?";
+            });
+            msg.textContent="";
+          },1200);
+        }
+      }
+    }
+
+    /* =========================================================
+       4. MISSÃO 2 — DESCOBRIR A PIRÂMIDE
+       Mecânica: investigação por pistas.
+       ========================================================= */
+    function missaoPiramide(){
+      destinoEl.textContent = "CHOLULA";
+
+      conteudo.innerHTML = `
+        <div class="icone-grande">🛕</div>
+        <h2 class="titulo-fase">Missão 2: Investigação arqueológica</h2>
+        <p class="texto">
+          A pista diz: “Sou considerada a maior pirâmide do mundo em volume
+          e estou escondida sob uma colina.” Qual local deve receber o selo?
+        </p>
+
+        <div class="pirâmides">
+          <div class="piramide-card" onclick="responderPiramide('gize')">
+            <div class="emoji">🔺</div>
+            PIRÂMIDE DE GIZÉ
+          </div>
+          <div class="piramide-card" onclick="responderPiramide('cholula')">
+            <div class="emoji">⛰️🛕</div>
+            GRANDE PIRÂMIDE DE CHOLULA
+          </div>
+          <div class="piramide-card" onclick="responderPiramide('chichen')">
+            <div class="emoji">🛕☀️</div>
+            CHICHÉN ITZÁ
+          </div>
+        </div>
+
+        <div class="mensagem" id="msg"></div>
+      `;
+
+      falar("Missão dois. Descubra qual é a maior pirâmide do mundo em volume.");
+    }
+
+    function responderPiramide(resposta){
+      if(bloqueado) return;
+      const msg=document.getElementById("msg");
+
+      if(resposta==="cholula"){
+        msg.textContent="✅ Investigação concluída! A Grande Pirâmide de Cholula fica no México.";
+        premiar(2,20);
+        falar("Correto. A Grande Pirâmide de Cholula.");
+        avancarDepois(()=>{
+          missao=3;
+          atualizarPainel();
+          missaoAltar();
+        },1900);
+      }else{
+        msg.textContent="❌ Essa pirâmide é famosa, mas não corresponde à pista.";
+        pontos=Math.max(0,pontos-5);
+        atualizarPainel();
+      }
+    }
+
+    /* =========================================================
+       5. MISSÃO 3 — MONTAR UMA OFERENDA
+       Mecânica: seleção de elementos culturais.
+       ========================================================= */
+    let selecionadosAltar = new Set();
+
+    function missaoAltar(){
+      destinoEl.textContent = "OAXACA";
+      selecionadosAltar = new Set();
+
+      conteudo.innerHTML = `
+        <div class="icone-grande">💀🌼</div>
+        <h2 class="titulo-fase">Missão 3: Prepare a homenagem</h2>
+        <p class="texto">
+          Escolha exatamente três elementos ligados ao Día de Muertos.
+          Depois, confirme sua oferenda.
+        </p>
+
+        <div class="altar" id="altar">
+          <button class="item-altar" data-item="cempasuchil" onclick="alternarAltar(this)">🌼 CEMPASÚCHIL</button>
+          <button class="item-altar" data-item="foto" onclick="alternarAltar(this)">🖼️ FOTO DA FAMÍLIA</button>
+          <button class="item-altar" data-item="vela" onclick="alternarAltar(this)">🕯️ VELA</button>
+          <button class="item-altar" data-item="skate" onclick="alternarAltar(this)">🛹 SKATE</button>
+          <button class="item-altar" data-item="neve" onclick="alternarAltar(this)">⛄ BONECO DE NEVE</button>
+          <button class="item-altar" data-item="controle" onclick="alternarAltar(this)">🎮 CONTROLE</button>
+        </div>
+
+        <button class="btn-verde" onclick="confirmarAltar()">CONFIRMAR OFERENDA</button>
+        <div class="mensagem" id="msg"></div>
+      `;
+
+      falar("Missão três. Escolha três elementos ligados ao Dia dos Mortos.");
+    }
+
+    function alternarAltar(botao){
+      if(bloqueado) return;
+      const item=botao.dataset.item;
+
+      if(selecionadosAltar.has(item)){
+        selecionadosAltar.delete(item);
+        botao.classList.remove("selecionado");
+      }else{
+        if(selecionadosAltar.size>=3) return;
+        selecionadosAltar.add(item);
+        botao.classList.add("selecionado");
+      }
+    }
+
+    function confirmarAltar(){
+      if(bloqueado) return;
+      const corretos=["cempasuchil","foto","vela"];
+      const certo=corretos.every(x=>selecionadosAltar.has(x)) && selecionadosAltar.size===3;
+      const msg=document.getElementById("msg");
+
+      if(certo){
+        msg.textContent="✅ A oferenda ficou completa e respeitosa.";
+        premiar(3,20);
+        falar("Muito bem. A oferenda está completa.");
+        avancarDepois(()=>{
+          missao=4;
+          atualizarPainel();
+          missaoRitmo();
+        },1800);
+      }else{
+        msg.textContent="❌ Observe melhor: procure flor, memória e luz.";
+        pontos=Math.max(0,pontos-5);
+        atualizarPainel();
+      }
+    }
+
+    /* =========================================================
+       6. MISSÃO 4 — RITMO DO MARIACHI
+       Mecânica: jogo de memória sonora e visual.
+       ========================================================= */
+    const instrumentos=["🎺","🎻","🎸","🪇"];
+    let sequencia=[];
+    let jogada=[];
+    let podeJogar=false;
+
+    function missaoRitmo(){
+      destinoEl.textContent = "GUADALAJARA";
+      sequencia=[];
+      jogada=[];
+      podeJogar=false;
+
+      conteudo.innerHTML = `
+        <div class="icone-grande">🎺🎶</div>
+        <h2 class="titulo-fase">Missão 4: Ritmo do mariachi</h2>
+        <p class="texto">
+          Observe a sequência de instrumentos e repita na mesma ordem.
+        </p>
+
+        <div class="ritmo">
+          ${instrumentos.map((x,i)=>`
+            <button class="som" id="som${i}" onclick="tocarInstrumento(${i})">${x}</button>
+          `).join("")}
+        </div>
+
+        <button class="btn-amarelo" id="btnSequencia" onclick="iniciarSequencia()">MOSTRAR SEQUÊNCIA</button>
+        <div class="mensagem" id="msg">Memorize quatro instrumentos.</div>
+      `;
+
+      falar("Missão quatro. Memorize e repita o ritmo do mariachi.");
+    }
+
+    function iniciarSequencia(){
+      if(bloqueado) return;
+      bloqueado=true;
+      podeJogar=false;
+      jogada=[];
+      sequencia=Array.from({length:4},()=>Math.floor(Math.random()*4));
+      document.getElementById("btnSequencia").disabled=true;
+      document.getElementById("msg").textContent="👀 Observe com atenção...";
+
+      sequencia.forEach((valor,indice)=>{
+        setTimeout(()=>piscarSom(valor),600+indice*750);
+      });
+
+      setTimeout(()=>{
+        bloqueado=false;
+        podeJogar=true;
+        document.getElementById("msg").textContent="Agora repita a sequência.";
+      },600+sequencia.length*750);
+    }
+
+    function piscarSom(indice){
+      const botao=document.getElementById("som"+indice);
+      botao.classList.add("aceso");
+      emitirTom(indice);
+      setTimeout(()=>botao.classList.remove("aceso"),380);
+    }
+
+    function emitirTom(indice){
+      try{
+        const ctx=new (window.AudioContext||window.webkitAudioContext)();
+        const osc=ctx.createOscillator();
+        const ganho=ctx.createGain();
+        const frequencias=[330,392,440,523];
+        osc.frequency.value=frequencias[indice];
+        osc.connect(ganho);
+        ganho.connect(ctx.destination);
+        ganho.gain.value=.08;
+        osc.start();
+        osc.stop(ctx.currentTime+.18);
+      }catch(e){}
+    }
+
+    function tocarInstrumento(indice){
+      if(!podeJogar || bloqueado) return;
+
+      piscarSom(indice);
+      jogada.push(indice);
+      const pos=jogada.length-1;
+
+      if(jogada[pos]!==sequencia[pos]){
+        podeJogar=false;
+        pontos=Math.max(0,pontos-5);
+        atualizarPainel();
+        document.getElementById("msg").textContent="❌ O ritmo se perdeu. Tente uma nova sequência.";
+        document.getElementById("btnSequencia").disabled=false;
+        return;
+      }
+
+      if(jogada.length===sequencia.length){
+        podeJogar=false;
+        document.getElementById("msg").textContent="✅ Ritmo perfeito! O mariachi aprovou.";
+        premiar(4,25);
+        falar("Excelente. Você repetiu o ritmo corretamente.");
+        avancarDepois(()=>{
+          missao=5;
+          atualizarPainel();
+          missaoFinal();
+        },1800);
+      }
+    }
+
+    /* =========================================================
+       7. MISSÃO 5 — DECIFRAR O MAPA CULTURAL
+       Mecânica: três pistas aleatórias em sequência.
+       ========================================================= */
+    const perguntas = [
+      {
+        p:"Qual alimento é a base de muitos pratos mexicanos?",
+        o:["Milho","Batata","Arroz doce","Trigo sarraceno"],
+        c:0
+      },
+      {
+        p:"Qual expressão mexicana pode indicar surpresa ou entusiasmo?",
+        o:["Órale!","Merci!","Cheers!","Danke!"],
+        c:0
+      },
+      {
+        p:"O México está localizado em qual parte do continente americano?",
+        o:["América do Norte","América do Sul","Caribe insular","Antártida"],
+        c:0
+      },
+      {
+        p:"Qual símbolo aparece no centro da bandeira mexicana?",
+        o:["Águia com serpente","Leão dourado","Sol com rosto","Touro vermelho"],
+        c:0
+      },
+      {
+        p:"Qual estilo musical é tradicional do México?",
+        o:["Mariachi","Fado","Samba","Tango"],
+        c:0
+      },
+      {
+        p:"A palavra 'chido', no espanhol mexicano, pode significar:",
+        o:["Legal ou bonito","Triste","Muito frio","Silencioso"],
+        c:0
+      }
+    ];
+
+    let rodadaFinal=[];
+    let indiceFinal=0;
+
+    function embaralhar(array){
+      return [...array].sort(()=>Math.random()-.5);
+    }
+
+    function missaoFinal(){
+      destinoEl.textContent = "MAPA CULTURAL";
+      rodadaFinal=embaralhar(perguntas).slice(0,3);
+      indiceFinal=0;
+      mostrarPerguntaFinal();
+    }
+
+    function mostrarPerguntaFinal(){
+      const q=rodadaFinal[indiceFinal];
+      const alternativas=q.o.map((texto,indice)=>({texto,correta:indice===q.c}));
+      const misturadas=embaralhar(alternativas);
+
+      conteudo.innerHTML=`
+        <div class="icone-grande">🗺️🌎</div>
+        <h2 class="titulo-fase">Missão 5: Decifre o mapa</h2>
+        <p class="texto">
+          Pista ${indiceFinal+1} de 3<br><strong>${q.p}</strong>
+        </p>
+
+        <div class="opcoes">
+          ${misturadas.map((alt,i)=>`
+            <button class="opcao" onclick="responderFinal(this,${alt.correta})">${alt.texto}</button>
+          `).join("")}
+        </div>
+
+        <div class="mensagem" id="msg"></div>
+      `;
+
+      falar(`Pista ${indiceFinal+1}. ${q.p}`);
+    }
+
+    function responderFinal(botao,correta){
+      if(bloqueado) return;
+
+      if(correta){
+        botao.classList.add("certa");
+        botao.textContent="✅ "+botao.textContent;
+        pontos+=10;
+        acertos++;
+        atualizarPainel();
+        document.getElementById("msg").textContent="Resposta correta!";
+
+        bloqueado=true;
+        setTimeout(()=>{
+          bloqueado=false;
+          indiceFinal++;
+          if(indiceFinal<rodadaFinal.length){
+            mostrarPerguntaFinal();
+          }else{
+            document.getElementById("selo5").classList.add("conquistado");
+            barraEl.style.width="100%";
+            finalizar();
+          }
+        },1100);
+      }else{
+        botao.classList.add("errada");
+        botao.disabled=true;
+        pontos=Math.max(0,pontos-3);
+        atualizarPainel();
+        document.getElementById("msg").textContent="Ainda não. Tente outra alternativa.";
+      }
+    }
+
+    /* =========================================================
+       8. FINALIZAÇÃO
+       ========================================================= */
+    function finalizar(){
+      destinoEl.textContent = "EXPEDIÇÃO CONCLUÍDA";
+
+      conteudo.innerHTML=`
+        <div class="diploma">
+          <div style="font-size:60px">🇲🇽🏆</div>
+          <h2>PASSAPORTE COMPLETO!</h2>
+          <p class="texto" style="font-size:19px">
+            Certificamos que
+          </p>
+          <div class="nome-final">${nomeDoAluno()}</div>
+          <p class="texto" style="font-size:20px">
+            completou a <strong>Expedição México</strong>, demonstrando
+            conhecimentos sobre símbolos, história, tradições, música,
+            idioma e diversidade cultural mexicana.
+          </p>
+          <p><strong>PONTUAÇÃO FINAL: ${pontos} PONTOS</strong></p>
+          <button class="btn-verde" onclick="window.print()">🖨️ IMPRIMIR PASSAPORTE</button>
+        </div>
+      `;
+
+      falar(`Parabéns, ${nomeDoAluno()}. Você completou a Expedição México.`);
+      soltarConfetes();
+    }
+
+    function soltarConfetes(){
+      const itens=["🇲🇽","🌮","🌵","🎺","💀","🌼","⭐","🛕"];
+
+      for(let i=0;i<70;i++){
+        const el=document.createElement("div");
+        el.className="confete";
+        el.textContent=itens[Math.floor(Math.random()*itens.length)];
+        el.style.left=Math.random()*100+"vw";
+        el.style.animationDelay=Math.random()*1.5+"s";
+        document.body.appendChild(el);
+        setTimeout(()=>el.remove(),5500);
+      }
+    }
+
+    /* =========================================================
+       9. REINÍCIO
+       ========================================================= */
+    function reiniciarJogo(){
+      speechSynthesis.cancel();
+      missao=0;
+      pontos=0;
+      acertos=0;
+      bloqueado=false;
+
+      document.querySelectorAll(".selo").forEach(s=>s.classList.remove("conquistado"));
+      destinoEl.textContent="PORTÃO DE EMBARQUE";
+      atualizarPainel();
+
+      conteudo.innerHTML=`
+        <div class="icone-grande">✈️🇲🇽</div>
+        <h2 class="titulo-fase">Prepare seu passaporte!</h2>
+        <p class="texto">
+          Nesta viagem você não responderá apenas perguntas.
+          Cada parada possui uma missão diferente: montar, descobrir,
+          escolher, memorizar e decifrar.
+        </p>
+        <button class="btn-verde" onclick="comecar()">INICIAR VIAGEM</button>
+      `;
+    }
+
+    atualizarPainel();
+  </script>
+</body>
+</html>

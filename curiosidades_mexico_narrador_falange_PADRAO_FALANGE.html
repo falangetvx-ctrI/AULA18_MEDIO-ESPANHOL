@@ -1,0 +1,886 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <!-- =====================================================
+       PROJETO FALANGE
+       Atividade: Curiosidades do México e do Espanhol
+       Recurso: narrador + efeito de digitação + imagem automática
+       Imagens: curiosidade01.png até curiosidade30.png
+       ===================================================== -->
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Curiosidades do México e do Espanhol</title>
+
+  <style>
+    /* =====================================================
+       1. VARIÁVEIS VISUAIS DO PROJETO
+       ===================================================== */
+    :root {
+      --cor-verde: #0b8f4d;
+      --cor-vermelha: #c62828;
+      --cor-amarela: #ffd54f;
+      --cor-azul: #1565c0;
+      --cor-preta: #111;
+      --cor-papel: #fff8df;
+      --sombra-forte: 0 8px 0 var(--cor-preta);
+      --borda-forte: 5px solid var(--cor-preta);
+      --raio-grande: 26px;
+    }
+
+    /* =====================================================
+       2. RESET BÁSICO
+       ===================================================== */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(255,213,79,.9), transparent 18%),
+        radial-gradient(circle at 90% 20%, rgba(198,40,40,.75), transparent 20%),
+        radial-gradient(circle at 10% 90%, rgba(11,143,77,.75), transparent 22%),
+        linear-gradient(135deg, #0b8f4d 0%, #fff8df 42%, #c62828 100%);
+    }
+
+    button {
+      border: 4px solid var(--cor-preta);
+      border-radius: 16px;
+      padding: 10px 14px;
+      margin: 4px;
+      font-weight: 900;
+      font-size: 15px;
+      cursor: pointer;
+      box-shadow: 0 5px 0 var(--cor-preta);
+    }
+
+    button:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 var(--cor-preta);
+    }
+
+    /* =====================================================
+       3. FUNDO DECORATIVO
+       ===================================================== */
+    .decoracao-fundo {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .18;
+      background-image:
+        repeating-linear-gradient(45deg, transparent 0 18px, rgba(0,0,0,.18) 18px 20px),
+        repeating-linear-gradient(-45deg, transparent 0 24px, rgba(255,255,255,.55) 24px 27px);
+    }
+
+    /* =====================================================
+       4. ESTRUTURA PRINCIPAL
+       ===================================================== */
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cabecalho {
+      background: rgba(255,248,223,.96);
+      border: var(--borda-forte);
+      border-radius: var(--raio-grande);
+      box-shadow: var(--sombra-forte);
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    .titulo-principal {
+      margin: 0;
+      font-size: clamp(26px, 5vw, 54px);
+      color: var(--cor-vermelha);
+      text-transform: uppercase;
+      text-shadow:
+        3px 3px 0 var(--cor-amarela),
+        5px 5px 0 var(--cor-preta);
+    }
+
+    .subtitulo {
+      font-size: 18px;
+      font-weight: 900;
+      color: #222;
+    }
+
+    .grade {
+      display: grid;
+      grid-template-columns: 330px 1fr;
+      gap: 18px;
+    }
+
+    .cartao {
+      background: rgba(255,248,223,.97);
+      border: var(--borda-forte);
+      border-radius: var(--raio-grande);
+      box-shadow: var(--sombra-forte);
+      padding: 16px;
+    }
+
+    /* =====================================================
+       5. COLUNA ESQUERDA: IMAGEM E NARRADOR
+       ===================================================== */
+    .coluna-imagem {
+      min-height: 520px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .quadro-imagem {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border: var(--borda-forte);
+      border-radius: 24px;
+      background: linear-gradient(135deg, #0b8f4d, #fff, #c62828);
+      box-shadow: 0 7px 0 var(--cor-preta);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .quadro-imagem::before {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border: 3px dashed rgba(0,0,0,.35);
+      border-radius: 18px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .imagem-curiosidade {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 18px;
+      display: block;
+    }
+
+    .balao-narrador {
+      background: white;
+      border: 4px solid var(--cor-preta);
+      border-radius: 22px;
+      padding: 12px;
+      font-weight: 900;
+      margin-top: 12px;
+      position: relative;
+    }
+
+    .balao-narrador::before {
+      content: "";
+      position: absolute;
+      top: -18px;
+      left: 48%;
+      border-left: 14px solid transparent;
+      border-right: 14px solid transparent;
+      border-bottom: 18px solid var(--cor-preta);
+    }
+
+    .balao-narrador::after {
+      content: "";
+      position: absolute;
+      top: -11px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-bottom: 14px solid white;
+    }
+
+    .botoes {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .observacao {
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    /* =====================================================
+       6. COLUNA DIREITA: TEXTO DIGITADO
+       ===================================================== */
+    .palco {
+      min-height: 520px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .linha-superior {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .contador {
+      background: var(--cor-verde);
+      color: white;
+      border: 3px solid var(--cor-preta);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-weight: 900;
+    }
+
+    .tema {
+      background: var(--cor-amarela);
+      border: 3px solid var(--cor-preta);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-weight: 900;
+    }
+
+    .tela-texto {
+      flex: 1;
+      background: white;
+      border: 5px dashed var(--cor-vermelha);
+      border-radius: 22px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tela-texto::before {
+      content: "🇲🇽";
+      position: absolute;
+      font-size: 220px;
+      opacity: .06;
+      transform: rotate(-12deg);
+    }
+
+    .numero-curiosidade {
+      width: 78px;
+      height: 78px;
+      border-radius: 50%;
+      background: var(--cor-vermelha);
+      color: white;
+      border: var(--borda-forte);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      font-weight: 900;
+      margin-bottom: 18px;
+      box-shadow: 0 5px 0 var(--cor-preta);
+      z-index: 1;
+    }
+
+    .texto-curiosidade {
+      font-size: clamp(24px, 3.3vw, 42px);
+      line-height: 1.25;
+      font-weight: 900;
+      color: #111;
+      z-index: 1;
+      min-height: 170px;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      height: 1em;
+      background: var(--cor-preta);
+      animation: piscar .75s infinite;
+      vertical-align: middle;
+    }
+
+    /* =====================================================
+       7. BARRA DE PROGRESSO E MARCADORES
+       ===================================================== */
+    .barra-box {
+      height: 26px;
+      background: #ddd;
+      border: 4px solid var(--cor-preta);
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 14px 0;
+    }
+
+    .barra-progresso {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--cor-verde), white, var(--cor-vermelha));
+      transition: .35s;
+    }
+
+    .marcadores {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .marcador {
+      height: 12px;
+      background: #ddd;
+      border: 2px solid #111;
+      border-radius: 999px;
+    }
+
+    .marcador.ativo {
+      background: var(--cor-verde);
+    }
+
+    /* =====================================================
+       8. CORES DOS BOTÕES
+       ===================================================== */
+    .btn-verde { background: var(--cor-verde); color: white; }
+    .btn-vermelho { background: var(--cor-vermelha); color: white; }
+    .btn-amarelo { background: var(--cor-amarela); }
+    .btn-azul { background: var(--cor-azul); color: white; }
+
+    /* =====================================================
+       9. CONFETES E ANIMAÇÕES
+       ===================================================== */
+    .confete {
+      position: fixed;
+      top: -20px;
+      font-size: 22px;
+      animation: cair 4s linear forwards;
+      z-index: 9;
+    }
+
+    @keyframes piscar {
+      50% { opacity: 0; }
+    }
+
+    @keyframes cair {
+      to {
+        transform: translateY(110vh) rotate(720deg);
+        opacity: .2;
+      }
+    }
+
+    /* =====================================================
+       10. RESPONSIVIDADE
+       ===================================================== */
+    @media (max-width: 850px) {
+      .grade {
+        grid-template-columns: 1fr;
+      }
+
+      .coluna-imagem {
+        min-height: auto;
+      }
+
+      .palco {
+        min-height: 480px;
+      }
+
+      .marcadores {
+        grid-template-columns: repeat(10, 1fr);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Fundo decorativo com padrões coloridos -->
+  <div class="decoracao-fundo"></div>
+
+  <main class="container">
+    <!-- Cabeçalho da atividade -->
+    <header class="cabecalho">
+      <h1 class="titulo-principal">Viajando pelo México</h1>
+      <p class="subtitulo">Curiosidades sobre o México e o espanhol — com narrador e efeito de digitação</p>
+    </header>
+
+    <section class="grade">
+      <!-- =====================================================
+           COLUNA ESQUERDA
+           Imagem automática + balão do narrador + botões
+           ===================================================== -->
+      <aside class="cartao coluna-imagem">
+        <div class="quadro-imagem" id="imagemInfo">
+          <img
+            id="imagemCuriosidade"
+            class="imagem-curiosidade"
+            src="curiosidade01.png"
+            alt="Imagem da curiosidade apresentada">
+        </div>
+
+        <div class="balao-narrador" id="falaNarrador">
+          Olá! Clique em iniciar e vamos conhecer o México!
+        </div>
+
+        <div class="botoes">
+          <button class="btn-verde" onclick="iniciar()">▶ Iniciar</button>
+          <button class="btn-azul" onclick="proxima()">Próxima</button>
+          <button class="btn-amarelo" onclick="repetir()">🔊 Repetir fala</button>
+          <button class="btn-vermelho" onclick="reiniciar()">↺ Reiniciar</button>
+        </div>
+
+        <p class="observacao">A imagem muda conforme a curiosidade apresentada.</p>
+      </aside>
+
+      <!-- =====================================================
+           COLUNA DIREITA
+           Texto digitado + progresso
+           ===================================================== -->
+      <article class="cartao palco">
+        <div class="linha-superior">
+          <div class="contador">
+            Curiosidade <span id="atual">1</span> de 30
+          </div>
+
+          <div class="tema">
+            🇲🇽 México • Español • Cultura
+          </div>
+        </div>
+
+        <div class="tela-texto">
+          <div class="numero-curiosidade" id="numero">1</div>
+          <div class="texto-curiosidade">
+            <span id="textoDigitado"></span><span class="cursor"></span>
+          </div>
+        </div>
+
+        <div class="barra-box">
+          <div class="barra-progresso" id="barra"></div>
+        </div>
+
+        <div class="marcadores" id="mini"></div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    /* =====================================================
+       1. DADOS DAS CURIOSIDADES
+       Cada item do array representa uma curiosidade exibida.
+       ===================================================== */
+    const curiosidades = [
+      "O México é o maior país de língua espanhola em número de falantes.",
+      "A capital do México é a Cidade do México.",
+      "O seriado Chaves foi criado no México e ajudou milhões de crianças a conhecerem a língua espanhola e a cultura mexicana.",
+      "No México, o espanhol tem palavras próprias, diferentes do espanhol da Espanha, como chido (bonito) e órale (surpresa).",
+      "A maior pirâmide do mundo fica no México. Ela é a Grande Pirâmide de Cholula e é maior que a Pirâmide de Gizé, no Egito.",
+      "Rebelde foi uma das novelas mexicanas mais famosas do mundo e ajudou muitos jovens a aprender espanhol através das músicas, dos diálogos e da cultura mexicana.",
+      "O México tem forte influência dos povos indígenas, como astecas e maias.",
+      "Os maias praticavam um jogo com bola parecido com o futebol, mas podiam usar apenas os quadris, os ombros e os cotovelos. Era proibido usar as mãos e os pés.",
+      "Os astecas construíram jardins flutuantes chamados chinampas, onde cultivavam alimentos sobre a água.",
+      "O México possui muitas pirâmides antigas, a pirâmide de Chichén Itzá é uma das mais famosas.",
+      "O Dia dos Mortos é uma das tradições mexicanas mais conhecidas, não é visto como uma festa triste, mas como uma homenagem aos familiares que já morreram.",
+      "A caveira colorida é um símbolo muito presente nessa celebração.",
+      "A flor de cempasúchil é usada nas oferendas do Dia dos Mortos.",
+      "La Catrina é a caveira mais famosa do México e simboliza que todas as pessoas são iguais diante da morte, sendo um dos maiores símbolos do Dia dos Mortos.",
+      "A comida mexicana é Patrimônio Cultural Imaterial da Humanidade.",
+      "O milho é um dos alimentos mais importantes da cultura mexicana.",
+      "A tortilla é base de muitos pratos mexicanos.",
+      "Tacos, burritos, quesadillas e nachos são comidas famosas do México.",
+      "A pimenta é muito usada na culinária mexicana.",
+      "O guacamole é feito principalmente com abacate.",
+      "Cancún é um dos destinos turísticos mais visitados do México, famoso por suas praias de águas azul-turquesa, areia branca e ruínas maias próximas.",
+      "O mariachi é um estilo musical tradicional do México.",
+      "O sombrero mexicano é um símbolo cultural muito conhecido.",
+      "O México tem desertos, praias, florestas, montanhas e vulcões.",
+      "O México fica na América do Norte, faz fronteira com os Estados Unidos, Guatemala e Belize.",
+      "A bandeira do México tem as cores verde, branco e vermelho.",
+      "No centro da bandeira há uma águia segurando uma serpente.",
+      "O nome México vem da língua dos astecas e pode significar -Lugar no centro da Lua, uma referência à antiga capital construída sobre uma ilha em um grande lago.",
+      "Muitos nomes de cidades, estados e lugares do México vêm de línguas indígenas. Além disso, idiomas como o náuatle e o maia influenciaram o espanhol mexicano, deixando palavras, expressões e nomes que continuam sendo usados até hoje.",
+      "A expressão mexicana “El que nace para tamal, del cielo le caen las hojas” ensina que o destino sempre encontra uma maneira de acontecer."
+];
+
+    /* =====================================================
+       2. DADOS VISUAIS
+       Cada item corresponde à curiosidade na mesma posição.
+       O HTML também carrega imagens locais no padrão:
+       curiosidade01.png, curiosidade02.png, ..., curiosidade30.png
+       ===================================================== */
+    const visuais = [
+      {
+            "emoji": "🗣️🇲🇽",
+            "titulo": "Espanhol no México",
+            "fundo": "linear-gradient(135deg,#0b8f4d,#ffffff,#c62828)"
+      },
+      {
+            "emoji": "🏙️🇲🇽",
+            "titulo": "Cidade do México",
+            "fundo": "linear-gradient(135deg,#1565c0,#fff8df,#c62828)"
+      },
+      {
+            "emoji": "💬📚",
+            "titulo": "Idioma espanhol",
+            "fundo": "linear-gradient(135deg,#ffd54f,#ffffff,#0b8f4d)"
+      },
+      {
+            "emoji": "🗨️🌎",
+            "titulo": "Espanhol mexicano",
+            "fundo": "linear-gradient(135deg,#c62828,#fff8df,#0b8f4d)"
+      },
+      {
+            "emoji": "😎✨",
+            "titulo": "Chido",
+            "fundo": "linear-gradient(135deg,#ffd54f,#ff8a65,#c62828)"
+      },
+      {
+            "emoji": "😮🎉",
+            "titulo": "Órale!",
+            "fundo": "linear-gradient(135deg,#0b8f4d,#ffd54f,#ffffff)"
+      },
+      {
+            "emoji": "🏺🪶",
+            "titulo": "Povos indígenas",
+            "fundo": "linear-gradient(135deg,#8d6e63,#ffd54f,#0b8f4d)"
+      },
+      {
+            "emoji": "🛕🦅",
+            "titulo": "Astecas",
+            "fundo": "linear-gradient(135deg,#6d4c41,#fff8df,#c62828)"
+      },
+      {
+            "emoji": "🛕🌿",
+            "titulo": "Maias",
+            "fundo": "linear-gradient(135deg,#2e7d32,#fff8df,#1565c0)"
+      },
+      {
+            "emoji": "🛕✨",
+            "titulo": "Pirâmides antigas",
+            "fundo": "linear-gradient(135deg,#ffcc80,#fff8df,#6d4c41)"
+      },
+      {
+            "emoji": "🛕☀️",
+            "titulo": "Chichén Itzá",
+            "fundo": "linear-gradient(135deg,#ffd54f,#fff8df,#8d6e63)"
+      },
+      {
+            "emoji": "💀🌼",
+            "titulo": "Dia dos Mortos",
+            "fundo": "linear-gradient(135deg,#7b1fa2,#ffd54f,#c62828)"
+      },
+      {
+            "emoji": "🕯️❤️",
+            "titulo": "Homenagem",
+            "fundo": "linear-gradient(135deg,#c62828,#fff8df,#7b1fa2)"
+      },
+      {
+            "emoji": "💀🎨",
+            "titulo": "Caveira colorida",
+            "fundo": "linear-gradient(135deg,#1565c0,#ffd54f,#c62828)"
+      },
+      {
+            "emoji": "🌼🕯️",
+            "titulo": "Cempasúchil",
+            "fundo": "linear-gradient(135deg,#ff9800,#ffd54f,#fff8df)"
+      },
+      {
+            "emoji": "🌮🏆",
+            "titulo": "Comida mexicana",
+            "fundo": "linear-gradient(135deg,#0b8f4d,#ffd54f,#c62828)"
+      },
+      {
+            "emoji": "🌽⭐",
+            "titulo": "Milho",
+            "fundo": "linear-gradient(135deg,#ffd54f,#fff8df,#0b8f4d)"
+      },
+      {
+            "emoji": "🫓🌮",
+            "titulo": "Tortilla",
+            "fundo": "linear-gradient(135deg,#ffcc80,#fff8df,#c62828)"
+      },
+      {
+            "emoji": "🌮🧀",
+            "titulo": "Pratos famosos",
+            "fundo": "linear-gradient(135deg,#c62828,#ffd54f,#0b8f4d)"
+      },
+      {
+            "emoji": "🌶️🔥",
+            "titulo": "Pimenta",
+            "fundo": "linear-gradient(135deg,#c62828,#ff7043,#ffd54f)"
+      },
+      {
+            "emoji": "🥑🍋",
+            "titulo": "Guacamole",
+            "fundo": "linear-gradient(135deg,#2e7d32,#c5e1a5,#fff8df)"
+      },
+      {
+            "emoji": "🎺🎶",
+            "titulo": "Mariachi",
+            "fundo": "linear-gradient(135deg,#111,#c62828,#ffd54f)"
+      },
+      {
+            "emoji": "👒🇲🇽",
+            "titulo": "Sombrero",
+            "fundo": "linear-gradient(135deg,#ffd54f,#fff8df,#8d6e63)"
+      },
+      {
+            "emoji": "🌵🏖️🌋",
+            "titulo": "Paisagens",
+            "fundo": "linear-gradient(135deg,#0b8f4d,#1565c0,#c62828)"
+      },
+      {
+            "emoji": "🌎📍",
+            "titulo": "América do Norte",
+            "fundo": "linear-gradient(135deg,#1565c0,#fff8df,#0b8f4d)"
+      },
+      {
+            "emoji": "🟩⬜🟥",
+            "titulo": "Bandeira",
+            "fundo": "linear-gradient(90deg,#0b8f4d 0 33%,#fff 33% 66%,#c62828 66%)"
+      },
+      {
+            "emoji": "🦅🐍",
+            "titulo": "Águia e serpente",
+            "fundo": "linear-gradient(135deg,#fff8df,#ffd54f,#0b8f4d)"
+      },
+      {
+            "emoji": "🗺️🤝",
+            "titulo": "Fronteiras",
+            "fundo": "linear-gradient(135deg,#1565c0,#fff8df,#0b8f4d)"
+      },
+      {
+            "emoji": "🏷️🪶",
+            "titulo": "Nomes indígenas",
+            "fundo": "linear-gradient(135deg,#8d6e63,#ffd54f,#2e7d32)"
+      },
+      {
+            "emoji": "📚🌎",
+            "titulo": "Diversidade cultural",
+            "fundo": "linear-gradient(135deg,#0b8f4d,#fff8df,#c62828)"
+      }
+];
+
+    /* =====================================================
+       3. ESTADO DA ATIVIDADE
+       indice: controla qual curiosidade está sendo exibida.
+       digitando: impede avançar enquanto o texto está sendo digitado.
+       jaIniciou: verifica se o aluno já clicou em iniciar.
+       ===================================================== */
+    let indice = 0;
+    let digitando = false;
+    let jaIniciou = false;
+
+    /* =====================================================
+       4. ELEMENTOS DA PÁGINA
+       Centraliza os elementos usados no JavaScript.
+       ===================================================== */
+    const textoDigitado = document.getElementById("textoDigitado");
+    const numero = document.getElementById("numero");
+    const atual = document.getElementById("atual");
+    const barra = document.getElementById("barra");
+    const mini = document.getElementById("mini");
+    const falaNarrador = document.getElementById("falaNarrador");
+    const imagemInfo = document.getElementById("imagemInfo");
+    const imagemCuriosidade = document.getElementById("imagemCuriosidade");
+
+    /* =====================================================
+       5. CRIAÇÃO DOS MARCADORES
+       Gera automaticamente 30 bolinhas de progresso.
+       ===================================================== */
+    mini.innerHTML = curiosidades
+      .map((_, i) => `<div class="marcador" id="marcador-${i + 1}"></div>`)
+      .join("");
+
+    /* =====================================================
+       6. FUNÇÃO: falar()
+       Usa o narrador do próprio navegador.
+       ===================================================== */
+    function falar(texto) {
+      if (!("speechSynthesis" in window)) return;
+
+      speechSynthesis.cancel();
+
+      const fala = new SpeechSynthesisUtterance(texto);
+      fala.lang = "pt-BR";
+      fala.rate = 0.95;
+      fala.pitch = 1.05;
+
+      speechSynthesis.speak(fala);
+    }
+
+    /* =====================================================
+       7. FUNÇÃO: digitar()
+       Cria o efeito de texto sendo digitado.
+       ===================================================== */
+    async function digitar(texto) {
+      digitando = true;
+      textoDigitado.textContent = "";
+
+      for (let i = 0; i < texto.length; i++) {
+        textoDigitado.textContent += texto[i];
+        await new Promise(resolve => setTimeout(resolve, 38));
+      }
+
+      digitando = false;
+    }
+
+    /* =====================================================
+       8. FUNÇÃO: nomeImagemAtual()
+       Monta automaticamente o nome da imagem:
+       1  -> curiosidade01.png
+       2  -> curiosidade02.png
+       30 -> curiosidade30.png
+       ===================================================== */
+    function nomeImagemAtual() {
+      const numeroImagem = String(indice + 1).padStart(2, "0");
+      return `curiosidade${numeroImagem}.png`;
+    }
+
+    /* =====================================================
+       9. FUNÇÃO: atualizarVisual()
+       Atualiza número, barra, marcadores, fundo e imagem.
+       ===================================================== */
+    function atualizarVisual() {
+      const visual = visuais[indice];
+
+      numero.textContent = indice + 1;
+      atual.textContent = indice + 1;
+      barra.style.width = ((indice + 1) / curiosidades.length * 100) + "%";
+
+      document
+        .querySelectorAll(".marcador")
+        .forEach((marcador, i) => {
+          marcador.classList.toggle("ativo", i <= indice);
+        });
+
+      imagemInfo.style.background = visual.fundo;
+      imagemCuriosidade.src = nomeImagemAtual();
+    }
+
+    /* =====================================================
+       10. FUNÇÃO: mostrar()
+       Exibe a curiosidade atual, fala e digita o texto.
+       ===================================================== */
+    async function mostrar() {
+      atualizarVisual();
+
+      const texto = curiosidades[indice];
+      const numeroAtual = indice + 1;
+
+      falaNarrador.textContent = `Atenção! Curiosidade número ${numeroAtual}.`;
+      falar(`Curiosidade número ${numeroAtual}. ${texto}`);
+
+      await digitar(texto);
+
+      if (indice === curiosidades.length - 1) {
+        finalizarAtividade();
+      }
+    }
+
+    /* =====================================================
+       11. FUNÇÃO: iniciar()
+       Inicia a atividade a partir da primeira curiosidade.
+       ===================================================== */
+    function iniciar() {
+      if (digitando) return;
+
+      jaIniciou = true;
+      indice = 0;
+
+      mostrar();
+    }
+
+    /* =====================================================
+       12. FUNÇÃO: proxima()
+       Avança para a próxima curiosidade.
+       ===================================================== */
+    function proxima() {
+      if (!jaIniciou) {
+        iniciar();
+        return;
+      }
+
+      if (digitando) return;
+
+      if (indice < curiosidades.length - 1) {
+        indice++;
+        mostrar();
+      } else {
+        finalizarAtividade();
+      }
+    }
+
+    /* =====================================================
+       13. FUNÇÃO: repetir()
+       Repete a narração da curiosidade atual.
+       ===================================================== */
+    function repetir() {
+      if (!jaIniciou) {
+        iniciar();
+        return;
+      }
+
+      falar(`Curiosidade número ${indice + 1}. ${curiosidades[indice]}`);
+    }
+
+    /* =====================================================
+       14. FUNÇÃO: reiniciar()
+       Volta tudo para o estado inicial.
+       ===================================================== */
+    function reiniciar() {
+      speechSynthesis.cancel();
+
+      indice = 0;
+      jaIniciou = false;
+      digitando = false;
+
+      textoDigitado.textContent = "";
+      numero.textContent = "1";
+      atual.textContent = "1";
+      barra.style.width = "0%";
+
+      document
+        .querySelectorAll(".marcador")
+        .forEach(marcador => marcador.classList.remove("ativo"));
+
+      falaNarrador.textContent = "Olá! Clique em iniciar e vamos conhecer o México!";
+      imagemInfo.style.background = "linear-gradient(135deg,#0b8f4d,#ffffff,#c62828)";
+      imagemCuriosidade.src = "curiosidade01.png";
+    }
+
+    /* =====================================================
+       15. FUNÇÃO: finalizarAtividade()
+       Mostra mensagem final e ativa confetes.
+       ===================================================== */
+    function finalizarAtividade() {
+      falaNarrador.textContent = "Muito bem! Você conheceu 30 curiosidades sobre o México.";
+      falar("Muito bem! Você conheceu trinta curiosidades sobre o México e o espanhol.");
+      soltarConfete();
+    }
+
+    /* =====================================================
+       16. FUNÇÃO: soltarConfete()
+       Cria elementos decorativos caindo na tela.
+       ===================================================== */
+    function soltarConfete() {
+      const itens = ["🇲🇽", "🌮", "🌵", "🎺", "💀", "🌶️", "⭐"];
+
+      for (let i = 0; i < 55; i++) {
+        const confete = document.createElement("div");
+
+        confete.className = "confete";
+        confete.textContent = itens[Math.floor(Math.random() * itens.length)];
+        confete.style.left = Math.random() * 100 + "vw";
+        confete.style.animationDelay = Math.random() * 1.2 + "s";
+
+        document.body.appendChild(confete);
+
+        setTimeout(() => confete.remove(), 5200);
+      }
+    }
+  </script>
+</body>
+</html>

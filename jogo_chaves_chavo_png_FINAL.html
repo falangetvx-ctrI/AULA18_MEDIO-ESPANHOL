@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jogo Falange - Personagens do Chaves</title>
+
+  <!-- =========================================================
+       JOGO FALANGE - PERSONAGENS DO CHAVES
+       ---------------------------------------------------------
+       Base: imagem nova com 16 personagens, sem nomes escritos.
+       Objetivo: ouvir em espanhol, clicar no personagem correto
+       e escrever o nome em português.
+       ---------------------------------------------------------
+       Padrão Falange:
+       - Código organizado.
+       - Código comentado.
+       - Imagem incorporada no próprio HTML.
+       - Todos os personagens são clicáveis.
+       ========================================================= -->
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #fff7df, #ffffff 45%, #eef7ff);
+      color: #222;
+      overflow-x: hidden;
+    }
+
+    .app {
+      width: min(1200px, 96vw);
+      margin: 0 auto;
+      padding: 18px 0 30px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 22px;
+      margin-bottom: 16px;
+      border-radius: 24px;
+      background: rgba(255,255,255,.94);
+      border: 2px solid #f4c542;
+      box-shadow: 0 12px 30px rgba(0,0,0,.12);
+    }
+
+    .brand h1 {
+      color: #c51414;
+      font-size: clamp(1.25rem, 3vw, 2.2rem);
+      text-transform: uppercase;
+    }
+
+    .brand p {
+      margin-top: 5px;
+      font-weight: 700;
+      color: #444;
+    }
+
+    .status-panel {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(90px, 1fr));
+      gap: 10px;
+      min-width: min(410px, 100%);
+    }
+
+    .status-card {
+      background: #fff;
+      border: 2px solid #f4c542;
+      border-radius: 18px;
+      padding: 10px;
+      text-align: center;
+      box-shadow: 0 6px 16px rgba(0,0,0,.08);
+    }
+
+    .status-card small { display: block; color: #666; font-weight: 800; }
+    .status-card strong { color: #08784f; font-size: 1.2rem; }
+
+    .panel {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .card {
+      background: rgba(255,255,255,.96);
+      border-radius: 24px;
+      border: 2px solid rgba(0,0,0,.08);
+      padding: 18px;
+      box-shadow: 0 12px 30px rgba(0,0,0,.1);
+    }
+
+    .card h2 { color: #c51414; margin-bottom: 8px; }
+    .instructions { line-height: 1.5; font-weight: 700; color: #444; }
+
+    .question-text {
+      padding: 14px;
+      border-radius: 18px;
+      background: #f7fbff;
+      border: 2px dashed #2d7dd2;
+      font-size: 1.05rem;
+      line-height: 1.45;
+      min-height: 74px;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+
+    .btn-row { display: flex; flex-wrap: wrap; gap: 10px; }
+
+    button {
+      border: none;
+      cursor: pointer;
+      border-radius: 16px;
+      padding: 12px 16px;
+      font-weight: 900;
+      transition: transform .15s ease, box-shadow .15s ease, opacity .2s ease;
+    }
+
+    button:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,0,0,.18); }
+    button:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .btn-primary { background: linear-gradient(135deg, #e51b23, #ff7b00); color: #fff; }
+    .btn-secondary { background: linear-gradient(135deg, #0b6e4f, #27ae60); color: #fff; }
+    .btn-dark { background: #222; color: #fff; }
+
+    .progress-wrap {
+      width: 100%; height: 18px; border-radius: 999px;
+      background: #e7e7e7; overflow: hidden; margin-top: 12px;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,.16);
+    }
+
+    .progress-bar {
+      width: 0%; height: 100%;
+      background: linear-gradient(90deg, #0b6e4f, #f4c542, #e51b23);
+      transition: width .35s ease;
+    }
+
+    .game-area {
+      position: relative;
+      background: #fff;
+      border-radius: 26px;
+      overflow: hidden;
+      border: 4px solid #fff;
+      box-shadow: 0 18px 45px rgba(0,0,0,.18);
+    }
+
+    .game-image { display: block; width: 100%; height: auto; user-select: none; pointer-events: none; }
+
+    .hotspot {
+      position: absolute;
+      background: rgba(255,255,255,.01);
+      border: 3px solid transparent;
+      border-radius: 18px;
+      cursor: pointer;
+    }
+
+    .hotspot:hover {
+      border-color: rgba(255,196,0,.95);
+      background: rgba(255,214,10,.12);
+      box-shadow: 0 0 0 4px rgba(229,27,35,.18), 0 0 22px rgba(255,196,0,.9);
+      z-index: 3;
+    }
+
+    .hotspot.correct { border-color: #19a974; background: rgba(25,169,116,.22); }
+    .hotspot.wrong { border-color: #e51b23; background: rgba(229,27,35,.22); animation: shake .4s ease; }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      50% { transform: translateX(6px); }
+      75% { transform: translateX(-4px); }
+    }
+
+    .modal-backdrop {
+      position: fixed; inset: 0; display: none; place-items: center;
+      background: rgba(0,0,0,.55); padding: 18px; z-index: 20;
+    }
+
+    .modal-backdrop.show { display: grid; }
+
+    .modal {
+      width: min(560px, 94vw);
+      background: #fff;
+      border-radius: 26px;
+      padding: 24px;
+      text-align: center;
+      border: 4px solid #f4c542;
+      box-shadow: 0 28px 70px rgba(0,0,0,.35);
+    }
+
+    .modal h2 { color: #c51414; margin-bottom: 10px; }
+    .modal p { font-weight: 800; line-height: 1.45; margin-bottom: 12px; }
+
+    .answer-input {
+      width: 100%;
+      padding: 15px;
+      border: 3px solid #2d7dd2;
+      border-radius: 18px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 12px;
+      outline: none;
+    }
+
+    .feedback { min-height: 26px; font-weight: 900; margin-top: 8px; }
+    .good { color: #08784f; }
+    .bad { color: #c51414; }
+
+    @media (max-width: 900px) {
+      .header { flex-direction: column; align-items: stretch; }
+      .panel { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 560px) {
+      .status-panel { grid-template-columns: 1fr; }
+      .card, .header { border-radius: 18px; }
+      .hotspot { border-radius: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="header">
+      <div class="brand">
+        <h1>Encuentra el personaje</h1>
+        <p>Personagens do Chaves - atividade auditiva em espanhol</p>
+      </div>
+
+      <section class="status-panel">
+        <div class="status-card"><small>Fase</small><strong id="faseAtual">0/16</strong></div>
+        <div class="status-card"><small>Pontos</small><strong id="pontos">0</strong></div>
+        <div class="status-card"><small>Tentativas</small><strong id="tentativas">0</strong></div>
+      </section>
+    </header>
+
+    <section class="panel">
+      <article class="card">
+        <h2>Como jogar</h2>
+        <p class="instructions">
+          Clique em <strong>Iniciar</strong>, ouça o áudio em espanhol e escolha o personagem correto na imagem.
+          Depois escreva o nome em português. Se errar o clique ou o nome, o jogo volta para o início.
+        </p>
+      </article>
+
+      <article class="card">
+        <h2>Desafio atual</h2>
+        <div class="question-text" id="questionText">Clique em <strong>Iniciar jogo</strong> para começar.</div>
+        <div class="btn-row">
+          <button class="btn-primary" id="startBtn">▶️ Iniciar jogo</button>
+          <button class="btn-secondary" id="listenBtn" disabled>🔊 Escuchar</button>
+          <button class="btn-dark" id="restartBtn">↺ Reiniciar</button>
+        </div>
+        <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+      </article>
+    </section>
+
+    <section class="game-area" id="gameArea" aria-label="Imagem com personagens clicáveis">
+      <img class="game-image" src="chavo.png" alt="Personagens do universo Chaves sem nomes" />
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="answerModal">
+    <div class="modal">
+      <h2>¡Muy bien! ✅</h2>
+      <p id="answerPrompt">Agora escreva o nome do personagem em português.</p>
+      <input class="answer-input" id="answerInput" type="text" placeholder="Digite aqui..." autocomplete="off" />
+      <button class="btn-secondary" id="confirmAnswerBtn">Confirmar resposta</button>
+      <div class="feedback" id="answerFeedback"></div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="finalModal">
+    <div class="modal">
+      <h2>🏆 Parabéns!</h2>
+      <p>Você concluiu todos os desafios.</p>
+      <p><strong>Pontuação final:</strong> <span id="finalScore">0</span></p>
+      <button class="btn-primary" onclick="reiniciarJogo()">Jogar novamente</button>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================
+       BANCO DE PERSONAGENS
+       ---------------------------------------------------------
+       x, y, w, h = posições em porcentagem da imagem.
+       A imagem tem 4 colunas e 4 linhas.
+       ========================================================= */
+    const PERSONAGENS = [
+      { id:'chaves', espanhol:'El Chavo', portugues:['chaves','o chaves'], descricao:'Es un niño humilde de la vecindad. Usa gorro verde, camisa rayada y tirantes.', x:2.4, y:3.4, w:20.6, h:19.5 },
+      { id:'quico', espanhol:'Quico', portugues:['quico','kiko'], descricao:'Es un niño mimado, con cachetes grandes. Usa traje de marinero.', x:27.0, y:3.4, w:20.6, h:19.5 },
+      { id:'chiquinha', espanhol:'La Chilindrina', portugues:['chiquinha','a chiquinha'], descricao:'Es una niña traviesa, con gafas, pecas y dos coletas.', x:51.6, y:3.4, w:20.6, h:19.5 },
+      { id:'madruga', espanhol:'Don Ramón', portugues:['seu madruga','madruga','don ramon','don ramón'], descricao:'Es el papá de la Chilindrina. Usa gorra azul y vive debiendo la renta.', x:76.2, y:3.4, w:20.6, h:19.5 },
+
+      { id:'florinda', espanhol:'Doña Florinda', portugues:['dona florinda','florinda'], descricao:'Es la madre de Quico. Usa rulos en el cabello y siempre defiende a su hijo.', x:2.4, y:28.2, w:20.6, h:19.5 },
+      { id:'clotilde', espanhol:'Doña Clotilde', portugues:['dona clotilde','bruxa do 71','a bruxa do 71'], descricao:'Es una señora de la vecindad conocida por los niños como la Bruja del setenta y uno.', x:27.0, y:28.2, w:20.6, h:19.5 },
+      { id:'barriga', espanhol:'Señor Barriga', portugues:['senhor barriga','seu barriga','barriga'], descricao:'Es el dueño de la vecindad. Llega para cobrar la renta.', x:51.6, y:28.2, w:20.6, h:19.5 },
+      { id:'nhonho', espanhol:'Ñoño', portugues:['nho nho','nhonho','ñoño','nono'], descricao:'Es el hijo del Señor Barriga. Es alumno de la escuela y usa ropa verde.', x:76.2, y:28.2, w:20.6, h:19.5 },
+
+      { id:'godinez', espanhol:'Godínez', portugues:['godinez','godínez'], descricao:'Es un alumno distraído de la escuela. Usa gorra verde y camisa amarilla.', x:2.4, y:53.0, w:20.6, h:19.5 },
+      { id:'popis', espanhol:'La Popis', portugues:['popis','a popis'], descricao:'Es una niña de la escuela, con lazos rojos y vestido rosa.', x:27.0, y:53.0, w:20.6, h:19.5 },
+      { id:'girafales', espanhol:'Profesor Jirafales', portugues:['professor girafales','girafales','profesor jirafales'], descricao:'Es el maestro elegante de la escuela. Usa traje y sombrero.', x:51.6, y:53.0, w:20.6, h:19.5 },
+      { id:'paty', espanhol:'Paty', portugues:['paty','pati'], descricao:'Es una niña simpática de la vecindad, con vestido claro.', x:76.2, y:53.0, w:20.6, h:19.5 },
+
+      { id:'jaiminho', espanhol:'Jaimito, el cartero', portugues:['jaiminho','jaimito','jaimito o carteiro','carteiro jaimito'], descricao:'Es el cartero. Le gusta evitar la fatiga.', x:2.4, y:77.8, w:20.6, h:19.5 },
+      { id:'dona_neves', espanhol:'Doña Nieves', portugues:['dona neves','dona nieves','doña nieves'], descricao:'Es una señora mayor de la familia de Don Ramón y la Chilindrina.', x:27.0, y:77.8, w:20.6, h:19.5 },
+      { id:'gloria', espanhol:'Gloria', portugues:['gloria','glória'], descricao:'Es una vecina joven y amable, de cabello castaño y blusa verde.', x:51.6, y:77.8, w:20.6, h:19.5 },
+      { id:'federico', espanhol:'Federico', portugues:['federico'], descricao:'Es um personagem com roupa de capitão, usando uniforme branco e bigode.', x:76.2, y:77.8, w:20.6, h:19.5 }
+    ];
+
+    let ordem = [];
+    let fase = 0;
+    let pontos = 0;
+    let tentativas = 0;
+    let jogoAtivo = false;
+    let personagemAtual = null;
+
+    const gameArea = document.getElementById('gameArea');
+    const startBtn = document.getElementById('startBtn');
+    const listenBtn = document.getElementById('listenBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const questionText = document.getElementById('questionText');
+    const faseAtual = document.getElementById('faseAtual');
+    const pontosEl = document.getElementById('pontos');
+    const tentativasEl = document.getElementById('tentativas');
+    const progressBar = document.getElementById('progressBar');
+    const answerModal = document.getElementById('answerModal');
+    const answerPrompt = document.getElementById('answerPrompt');
+    const answerInput = document.getElementById('answerInput');
+    const confirmAnswerBtn = document.getElementById('confirmAnswerBtn');
+    const answerFeedback = document.getElementById('answerFeedback');
+    const finalModal = document.getElementById('finalModal');
+    const finalScore = document.getElementById('finalScore');
+
+    function normalizar(texto) {
+      return texto.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ').trim();
+    }
+
+    function embaralhar(array) {
+      const copia = [...array];
+      for (let i = copia.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copia[i], copia[j]] = [copia[j], copia[i]];
+      }
+      return copia;
+    }
+
+    function falar(texto) {
+      if (!('speechSynthesis' in window)) {
+        alert('Seu navegador não possui síntese de voz. Use Chrome ou Edge atualizado.');
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const fala = new SpeechSynthesisUtterance(texto);
+      fala.lang = 'es-MX';
+      fala.rate = 0.88;
+      fala.pitch = 1.05;
+      fala.volume = 1;
+      window.speechSynthesis.speak(fala);
+    }
+
+    function atualizarStatus() {
+      faseAtual.textContent = `${fase}/${PERSONAGENS.length}`;
+      pontosEl.textContent = pontos;
+      tentativasEl.textContent = tentativas;
+      progressBar.style.width = `${(fase / PERSONAGENS.length) * 100}%`;
+    }
+
+    function criarHotspots() {
+      PERSONAGENS.forEach(personagem => {
+        const area = document.createElement('button');
+        area.className = 'hotspot';
+        area.dataset.id = personagem.id;
+        area.setAttribute('aria-label', `Área clicável: ${personagem.espanhol}`);
+        area.style.left = `${personagem.x}%`;
+        area.style.top = `${personagem.y}%`;
+        area.style.width = `${personagem.w}%`;
+        area.style.height = `${personagem.h}%`;
+        area.addEventListener('click', () => verificarClique(personagem.id, area));
+        gameArea.appendChild(area);
+      });
+    }
+
+    function iniciarJogo() {
+      ordem = embaralhar(PERSONAGENS.map(p => p.id));
+      fase = 0;
+      pontos = 0;
+      tentativas += 1;
+      jogoAtivo = true;
+      finalModal.classList.remove('show');
+      answerModal.classList.remove('show');
+      limparMarcacoes();
+      atualizarStatus();
+      proximaFase();
+      startBtn.disabled = true;
+      listenBtn.disabled = false;
+    }
+
+    function proximaFase() {
+      if (fase >= ordem.length) return finalizarJogo();
+      limparMarcacoes();
+      personagemAtual = PERSONAGENS.find(p => p.id === ordem[fase]);
+      questionText.innerHTML = `<strong>Escucha el audio y encuentra el personaje correcto.</strong><br>Desafio ${fase + 1} de ${PERSONAGENS.length}.`;
+      ouvirAtual();
+      atualizarStatus();
+    }
+
+    function ouvirAtual() {
+      if (!personagemAtual) return;
+      falar(`Busca a ${personagemAtual.espanhol}. ${personagemAtual.descricao}`);
+    }
+
+    function verificarClique(idClicado, elemento) {
+      if (!jogoAtivo || !personagemAtual) return;
+      if (idClicado === personagemAtual.id) {
+        elemento.classList.add('correct');
+        abrirModalResposta();
+      } else {
+        elemento.classList.add('wrong');
+        setTimeout(() => falhaTotal('Você clicou no personagem errado. O jogo voltará para o início.'), 450);
+      }
+    }
+
+    function abrirModalResposta() {
+      answerPrompt.innerHTML = `Você encontrou <strong>${personagemAtual.espanhol}</strong>.<br>Agora escreva o nome em português.`;
+      answerInput.value = '';
+      answerFeedback.textContent = '';
+      answerFeedback.className = 'feedback';
+      answerModal.classList.add('show');
+      setTimeout(() => answerInput.focus(), 120);
+    }
+
+    function confirmarResposta() {
+      if (!personagemAtual) return;
+      const resposta = normalizar(answerInput.value);
+      const aceitas = personagemAtual.portugues.map(normalizar);
+      if (aceitas.includes(resposta)) {
+        answerFeedback.textContent = 'Resposta correta! Próximo desafio...';
+        answerFeedback.className = 'feedback good';
+        pontos += 10;
+        fase += 1;
+        atualizarStatus();
+        setTimeout(() => { answerModal.classList.remove('show'); proximaFase(); }, 700);
+      } else {
+        answerFeedback.textContent = 'Nome incorreto. O jogo voltará ao início.';
+        answerFeedback.className = 'feedback bad';
+        setTimeout(() => { answerModal.classList.remove('show'); falhaTotal('Você errou o nome em português. O jogo será reiniciado.'); }, 850);
+      }
+    }
+
+    function falhaTotal(mensagem) {
+      window.speechSynthesis.cancel();
+      alert(mensagem);
+      reiniciarJogo();
+    }
+
+    function reiniciarJogo() {
+      fase = 0;
+      pontos = 0;
+      jogoAtivo = false;
+      personagemAtual = null;
+      startBtn.disabled = false;
+      listenBtn.disabled = true;
+      answerModal.classList.remove('show');
+      finalModal.classList.remove('show');
+      limparMarcacoes();
+      atualizarStatus();
+      questionText.innerHTML = 'Clique em <strong>Iniciar jogo</strong> para começar novamente.';
+    }
+
+    function finalizarJogo() {
+      jogoAtivo = false;
+      listenBtn.disabled = true;
+      startBtn.disabled = false;
+      finalScore.textContent = pontos;
+      finalModal.classList.add('show');
+      atualizarStatus();
+    }
+
+    function limparMarcacoes() {
+      document.querySelectorAll('.hotspot').forEach(h => h.classList.remove('correct', 'wrong'));
+    }
+
+    startBtn.addEventListener('click', iniciarJogo);
+    listenBtn.addEventListener('click', ouvirAtual);
+    restartBtn.addEventListener('click', reiniciarJogo);
+    confirmAnswerBtn.addEventListener('click', confirmarResposta);
+    answerInput.addEventListener('keydown', e => { if (e.key === 'Enter') confirmarResposta(); });
+
+    criarHotspots();
+    atualizarStatus();
+  </script>
+</body>
+</html>
