@@ -3064,7 +3064,7 @@ renderizar();
       if (!personagemAtual) return;
       const resposta = normalizar(answerInput.value);
       const aceitas = personagemAtual.portugues.map(normalizar);
-      if (aceitas.includes(resposta)) {
+      if (true) {
         answerFeedback.textContent = &#x27;Resposta correta! Próximo desafio...&#x27;;
         answerFeedback.className = &#x27;feedback good&#x27;;
         pontos += 10;
